@@ -1,0 +1,20 @@
+Estimado/a {nombre},
+
+Bienvenido a la demo del servicio de protección. Redvoisste ha creado una cuenta para que puedas probar el servicio.
+
+Ahora puedes contar con una aplicación de botón de pánico en tu teléfono con el que podrás reportar emergencias al centro de ayuda, familiares y amigos.
+
+Para comenzar a utilizar la aplicación descarga en tu móvil la aplicación desde Apple Store o Google Play buscándola con la palabra 'protegeme'. Descarga la aplicación con el logo de nuestro servicio.
+
+Una vez instalada, la aplicación te pedirá las siguientes credenciales para acceder, (respetando mayúsculas y minúsculas):
+
+   Nombre de usuario: {usuario}
+   Contraseña: {password}
+
+Cuando presiones el botón la aplicación hará de inmediato una llamada al contact center de demo de Redvoiss. Te responderá una grabación. En un caso real de responderá el Call Center de emergencias y recibirá también tu ubicación.
+
+Nota: El botón de pánico requiere que estés en una zona con cobertura de internet para operar.
+
+En PROTEGEME, estamos comprometidos en crear redes de apoyo ante emergencias para tu comunidad.
+
+Somos REDVOISS, comunicaciones como servicio

@@ -1,0 +1,113 @@
+<?
+    $input['sip_username'] = $_GET['user'];
+    $input['domain'] = $_GET['domain'];
+    require_once 'BConexion.php';
+
+    /* crea objeto conexion*/
+    $DB = new BConexion;
+
+    $sqlquery = "SELECT c.sip_username,
+       c.sip_display_name,
+       c.sip_password,
+       a.cloud_username
+    FROM BP_USUARIO a,
+        BP_DOMINIO b,
+        BP_BOTON c
+    WHERE c.sip_username = :sip_username
+      AND b.dominio = :domain
+      AND a.esta_cod = 1 --usuario activo
+      AND c.esta_cod = 1 --boton activo
+      AND a.dom_cod = b.dom_cod
+      AND c.busua_cod = a.busua_cod";
+
+
+   if($DB->Query($sqlquery, $input) ==! FALSE)
+   {
+      //echo "SIP USERNAME =" . $DB->Value("SIP_USERNAME"). "<br>";
+    $sippassword = urlencode($DB->Value("SIP_PASSWORD"));
+    $hashpassword = md5($DB->Value("SIP_USERNAME").":".$input['domain'].":".$sippassword);
+    $sipusername = $DB->Value("SIP_USERNAME");
+    $sipdisplayname = $DB->Value("SIP_DISPLAY_NAME");
+    $cloud_username = $DB->Value("CLOUD_USERNAME");
+
+
+    $input2['cloud_username'] = $cloud_username;
+    $input2['domain'] = $_GET['domain'];
+
+    $sqlquery2 = "SELECT
+        d.username,
+        d.password
+    FROM bp_usuario a,
+        bp_dominio b,
+        fg.fc_gateway c,
+        fg.fc_usuario d
+    WHERE a.cloud_username = :cloud_username
+      AND b.dominio = :domain
+      AND a.dom_cod = b.dom_cod
+      AND b.gate_cod = c.gate_cod
+      AND c.usua_cod = d.usua_cod";
+
+    if ( $DB->Query($sqlquery2, $input2) ==! FALSE) {
+        $smsusername = $DB->Value("USERNAME");
+        $smspassword = $DB->Value("PASSWORD");
+    } else {
+        $smsusername = "";
+        $smspassword = "";
+    }
+      
+
+    $outputxml = '
+        <document type="freeswitch/xml">
+            <section name="directory">
+              <domain name="'.$input['domain'].'">
+                  <params>
+                      <param name="dial-string" value="{^^:sip_invite_domain=${dialed_domain}:presence_id=${dialed_user}@${dialed_domain}}${sofia_contact(*/${dialed_user}@${dialed_domain})},${verto_contact(${dialed_user}@${dialed_domain})}"/>
+                  </params>
+          
+                  <groups>
+                      <group name="default">
+                          <users>
+                              <user id="'.$sipusername.'">
+                                  <params>
+                                      <param name="a1-hash" value="'.$hashpassword.'"/>
+                                  </params>
+                                  <variables>
+                                      <variable name="cloud_username" value="'.$cloud_username.'"/>
+                                      <variable name="accountcode" value="'.$sipusername.'"/>
+                                      <variable name="smsusername" value="'.$smsusername.'"/>
+                                      <variable name="smspassword" value="'.$smspassword.'"/>
+                                      <variable name="user_context" value="'.$input['domain'].'"/>
+                                      <variable name="effective_caller_id_name" value="'.$sipdisplayname.'"/>
+                                      <variable name="effective_caller_id_number" value="'.$sipusername.'"/>
+                                      <variable name="outbound_caller_id_name" value="'.$sipdisplayname.'"/>
+                                      <variable name="outbound_caller_id_number" value="'.$sipusername.'"/>
+                                      <variable name="sip-force-contact" value="NDLB-connectile-dysfunction"/>
+                                  </variables>
+                              </user>
+                          </users>
+                      </group>
+                  </groups>
+              </domain>
+            </section>
+        </document>';
+
+        header('Content-Type: application/xml');
+        echo $outputxml;
+   } else {
+    $outputxml='
+    <document type="freeswitch/xml">
+        <section name="result">
+            <result status="not found" />
+        </section>
+    </document>';
+
+    header('Content-Type: application/xml');
+    echo $outputxml;
+  }
+
+   /* cierra cursor*/
+   $DB->Close();
+
+   /* cierra sesion */
+   $DB->Logoff();
+?>

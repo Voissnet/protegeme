@@ -1,0 +1,4 @@
+NOMBRE;CLOUD_USERNAME;CLOUD_PASSWORD;TELEFONO_USAURIO;CORREO;TIPO_BOTON;LOCALIZACION;TIPO_TRACKER;CAUSA;NOTIFICA
+username1;username1;username1;56220000001;username1@gmail.com;1;;1;Victima;NO
+username2;username2;username2;56220000002;username2@gmail.com;2;Padre Mariano 82, Providencia;1;Victima;NO
+username3;username3;username3;56220000003;username3@gmail.com;3;Padre Mariano 82, Providencia;2;Agresor;NO

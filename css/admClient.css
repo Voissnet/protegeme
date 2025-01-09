@@ -1,0 +1,344 @@
+body {
+   margin: 0;
+   background-color: var(--background-web) !important;
+   margin: 0;
+   overflow-x: hidden;
+   padding: 0px !important;
+}
+
+/* General Styles */
+html {
+   font-size: var(--font-size-web);
+   min-height: 100%;
+}
+
+.buttons {
+   background-color: var(--buttons-all-web);
+   border-color: var(--color-letter-web);
+}
+
+.buttons:hover {
+   background-color: var(--buttons-all-web);
+   color: var(--color-letter-web);
+}
+
+.colors-font {
+   color: var(--color-letter-web);
+}
+
+.background-all-1 {
+   background-color: var(--buttons-all-web) !important;
+}
+
+.color-font {
+   color: var(--color-letter-web) !important;
+}
+
+.color-incons {
+   color: var(--background-web);
+}
+
+.disabledp {
+   pointer-events: none;
+   background-color: var(--buttons-all-web);
+   border-color: var(--bs-btn-disabled-border-color);
+   opacity: var(--bs-btn-disabled-opacity);
+}
+
+td,
+th {
+   padding: 6px;
+   border: 1px solid #ccc;
+   text-align: left;
+}
+
+.nav {
+   background-color: var(--background-web) !important;
+   padding-top: 1rem;
+   position: fixed;
+   top: 0;
+   height: 100vh;
+   width: 170px;
+   transform: translateX(-250px);
+   transition: transform 0.4s;
+}
+
+@media screen and (max-width: 1023px) {
+   .nav {
+      transform: translateX(-250px);
+   }
+}
+
+/* tamano notebook */
+@media screen and (min-width: 1024px) {
+   .nav {
+      width: 170px;
+      transform: translateX(0);
+   }
+}
+
+.nav--show {
+   transform: translateX(-170px);
+}
+
+.nav--show .toggle-menu {
+   left: 206px;
+   top: 0;
+   color: #ffffff;
+}
+
+.toggle-menu {
+   color: rgb(0, 0, 0);
+   font-size: 1.5rem;
+   left: 260px;
+   height: 30px;
+   position: absolute;
+   width: 30px;
+   padding: 1rem;
+   padding-top: 1.4rem;
+   top: 0;
+   z-index: 100;
+}
+
+@media screen and (max-width: 1023px) {
+   .toggle-menu {
+      display: none;
+   }
+}
+
+.main {
+   background-color: rgb(244, 243, 239);
+   margin-left: 0;
+   padding-top: 1.5rem;
+   min-height: 100vh;
+   overflow: hidden;
+}
+
+@media screen and (max-width: 1023px) {
+   .main {
+      padding-top: 0.5rem;
+      margin-left: 50px;
+   }
+}
+
+/* tamano notebook */
+@media screen and (min-width: 1024px) {
+   .main {
+      padding-top: 0.5rem;
+      margin-left: 170px;
+   }
+}
+
+.main-menu {
+   padding-left: 0;
+   width: 100%;
+}
+
+.main-menu--show {
+   transform: translateX(210px);
+}
+
+.main-menu--show .main-menu__item {
+   transform: translateX(-300px);
+}
+
+.main-menu--show .main-menu__icon {
+   transform: translateX(300px);
+}
+
+.main-menu--show .logo-protegeme {
+   transform: translateX(195px);
+   margin-top: 70px;
+   width: 30px;
+   height: 30px;
+}
+
+.main-menu__item {
+   display: flex;
+   align-items: center;
+   margin-bottom: 15px;
+   font-size: var(--font-size-web);
+}
+
+.logo-div-protegeme {
+   display: block;
+   width: 100%;
+   text-align: center;
+   font-size: calc(16px + (var(--font-size-web) - 12px));
+}
+
+@media screen and (max-width: 1023px) {
+   .logo-div-protegeme {
+      display: flex;
+   }
+   .logo-protegeme {
+      width: 35px;
+      height: 35px;
+   }
+}
+
+/* tamano notebook */
+@media screen and (min-width: 1024px) {
+   .logo-div-protegeme {
+      display: block;
+   }
+   .logo-protegeme {
+      width: 80px;
+      height: 80px;
+   }
+}
+
+.main-close_sesion {
+   display: block;
+   text-align: center;
+   width: 100%;
+}
+
+.main-menu__close {
+   padding: 10px;
+   color: var(--color-letter-web);
+   padding: 5px;
+   font-weight: 500;
+   text-decoration: none;
+}
+
+.main-menu__close:hover {
+   color: yellow;
+   border: 1px solid yellow;
+   border-radius: 10px;
+   transition: all 0.8s;
+}
+
+@media screen and (max-width: 1023px) {
+   .main-close_sesion {
+      display: block;
+      text-align: start;
+   }
+}
+
+/* tamano notebook */
+@media screen and (min-width: 1024px) {
+   .main-close_sesion {
+      display: block;
+      text-align: center;
+   }
+}
+
+.main-menu--show .btn-close-sesion {
+   transform: translateX(250px);
+}
+
+.main-menu__link {
+   width: 90%;
+   padding: 10px;
+   border-radius: 0 10px 10px 0;
+   font-weight: 500;
+   background-color: var(--buttons-all-web);
+   color: var(--color-letter-web);
+   text-decoration: none;
+}
+
+.main-menu__link:hover {
+   color: yellow;
+   box-shadow: 1px 0px 3px var(--buttons-all-web);
+   border-left: none;
+   transition: all 0.3s;
+}
+
+.main-menu__link_select {
+   color: rgb(251, 251, 86);
+   border: 1px solid var(--buttons-all-web);
+   border-left: none;
+   transition: all 0.3s;
+}
+
+.main-menu__icon {
+   align-items: center;
+   margin-right: 0.5rem;
+}
+
+.btn-close-sesion {
+   align-items: center;
+   margin-right: 0.5rem;
+}
+
+/* footer */
+#footer-adm {
+   position: fixed;
+   margin-left: 0;
+   text-align: center;
+   overflow: hidden;
+   font-size: var(--font-size-web);
+   padding-left: 250px;
+}
+
+@media screen and (max-width: 767px) {
+   #footer-adm {
+      padding-left: 0px !important;
+   }
+}
+
+@media screen and (max-width: 1023px) {
+   .main-menu__icon {
+      transform: translateX(260px);
+   }
+   .btn-close-sesion {
+      transform: translateX(265px);
+   }
+   #footer-adm {
+      padding-left: 0px !important;
+   }
+}
+
+/* tamano notebook */
+@media screen and (min-width: 1024px) {
+   .main-menu__icon {
+      transform: translateX(0);
+   }
+   .btn-close-sesion {
+      transform: translateX(0);
+   }
+   #footer-adm {
+      padding-left: 185px !important;
+   }
+}
+
+.title-menu-adm {
+   font-size: calc(25px + (var(--font-size-web) - 12px));
+   font-weight: 500;
+   padding-left: 50px;
+}
+
+.title-menu-user {
+   font-size: calc(20px + (var(--font-size-web) - 12px));
+   font-weight: 500;
+   padding-left: 50px;
+}
+
+@media screen and (max-width: 1023px) {
+   .title-menu-adm {
+      padding-left: 0px;
+   }
+   .title-menu-user {
+      padding-left: 0px;
+   }
+}
+
+/* tamano notebook */
+@media screen and (min-width: 1024px) {
+   .title-menu-adm {
+      padding-left: 0px;
+   }
+   .title-menu-user {
+      padding-left: 0px;
+   }
+}
+
+.offcanvas,
+.offcanvas-lg,
+.offcanvas-md,
+.offcanvas-sm,
+.offcanvas-xl,
+.offcanvas-xxl {
+   width: 480px !important;
+}

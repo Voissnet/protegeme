@@ -1,0 +1,101 @@
+<?
+   require_once 'Parameters.php';
+   require_once 'MOD_Error.php';
+   require_once 'MOD_ReCaptcha.php';
+   require_once 'BConexion.php';
+   require_once 'BUsuarioRV.php';
+   require_once 'BHistoriaCambiaClave.php';
+
+   $DB         = new BConexion();
+   $UsuarioRV  = new BUsuarioRV();
+
+   $message = '';
+   $cod = '';
+   $error = false;
+
+   if (!isset($_POST)) {
+      $message = MOD_Error::ErrorCode('PBE_109');
+      $cod = 'PBE_109';
+      $error = true;
+      goto result;
+   }
+
+   $captcha = $_GET['recaptcha'];
+
+   if (!MOD_ReCaptcha::Valida($captcha)) {
+      $message = MOD_Error::ErrorCode('PBE_102');
+      $cod = 'PBE_102';
+      $error = true;
+      goto result;
+   }
+
+   $data = json_decode(file_get_contents('php://input'), true);
+
+   // verificar que usua_cod exista
+   $iv         = base64_decode(str_replace(['-','_'], ['+','/'], $data['iv']));
+   $usua_cod   = openssl_decrypt($data['uc_crypt'], 'aes-256-cbc', 'jdhg567yhjd389kjd45j5j4kmdhnr45k', 0, $iv);
+   $token      = $data['token'];
+
+   if ($UsuarioRV->Busca($usua_cod, $DB) === false) {
+      $message = MOD_Error::ErrorCode('PBE_117');
+      $cod = 'PBE_117';
+      $error = true;
+      goto result;
+   }
+
+   /* verificar que haya solicitado cambio de clave en las ultimas 24 horas */
+   $SHCC = new BHistoriaCambiaClave();
+   if ($SHCC->BuscaValido($usua_cod, $token, $DB ) === false) {
+      $message = MOD_Error::ErrorCode('PBE_118');
+      $cod = 'PBE_118';
+      $error = true;
+      goto result;
+   }
+
+   /* verificar que datos del link coincidan con BD */
+   if ($SHCC->iv != $data['iv'] || $SHCC->uc_crypt != $data['uc_crypt']) {
+      $message = MOD_Error::ErrorCode('PBE_119');
+      $cod = 'PBE_119';
+      $error = true;
+      goto result;
+   }
+   
+   /* verificar estado */   
+   if ($SHCC->esta_cod != '1') {
+      $message = MOD_Error::ErrorCode('PBE_120');
+      $cod = 'PBE_120';
+      $error = true;
+      goto result;
+   }
+
+   /* verificar passwords iguales */
+   if ($data['password'] != $data['password_v']) {
+      $message = MOD_Error::ErrorCode('PBE_121');
+      $cod = 'PBE_121';
+      $error = true;
+      goto result;
+   }
+
+   /* modificar password */
+   if ($UsuarioRV->ModificaPassword($data['password'], $DB) === false) {
+      $message = MOD_Error::ErrorCode('PBE_122');
+      $cod = 'PBE_122';
+      $error = true;
+      goto result;
+   }
+
+result:
+   if ($error === true) {
+      $data = array( 'status'    => 'error',
+                     'cod'       => $cod,
+                     'message'   => $message );
+      echo json_encode($data);
+   } else {
+      $SHCC->DesactivaToken($DB);
+      $data = array( 'status'    => 'success',
+                     'cod'       => $cod,
+                     'message'   => $message );
+      echo json_encode($data);
+   }
+   $DB->Logoff();
+?>

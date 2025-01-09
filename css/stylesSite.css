@@ -1,0 +1,201 @@
+* {
+   user-select: none;
+}
+
+*::selection {
+   background: none;
+}
+
+*::-moz-selection {
+   background: none;
+}
+
+body {
+   background-color: var(--background-app);
+}
+
+.pfont-size {
+   font-size: 14px;
+}
+
+.pfont-size-alert {
+   font-size: 16px;
+   font-weight: 300;
+}
+
+.buttons {
+   background-color: var(--buttons-all-app);
+   border-color: var(--color-letter-app);
+}
+
+.buttons:hover {
+   background-color: var(--buttons-all-app);
+   color: var(--color-letter-app);
+}
+
+.colors-font {
+   color: var(--color-letter-app) !important;
+}
+
+.background-table {
+   background-color: var(--buttons-all-app) !important;
+}
+
+.btn-close-contact {
+   color: var(--buttons-all-app);
+}
+
+.link-pointer {
+   cursor: pointer;
+}
+
+/* button */
+#cloudid {
+   width: 60%;
+   position: fixed;
+   top: 38%;
+   left: 50%;
+   border-radius: 50px 50px 50px 50px;
+   transform: translate(-50%, -50%);
+}
+
+#gpsubi {
+   text-align: center;
+   width: 100%;
+   position: fixed;
+   top: 65%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+}
+
+#settings-img {
+   width: 30px;
+   height: 30px;
+}
+
+/* img defaults */
+.img-incon {
+   width: 70px;
+   height: 70px;
+}
+
+#icon-setting {
+   position: fixed;
+   top: -2%;
+   width: 100%;
+   height: 100px;
+   padding-left: 20px;
+   padding-right: 0px;
+}
+
+#icon-contact {
+   position: fixed;
+   top: 75%;
+   width: 100%;
+   height: 100px;
+   padding-left: 20px;
+   padding-right: 0px;
+}
+
+/* footer */
+footer {
+   position: fixed;
+   top: 95%;
+   width: 100%;
+   font-size: var(--font-size-app);
+}
+
+#dom-user {
+   font-size: 14px;
+}
+
+.btn-contacts {
+   cursor: pointer;
+   color: var(--buttons-all-app);
+   padding: 4px;
+   margin-left: 4px;
+   margin-right: 4px;
+   text-decoration: none;
+}
+
+.btn-select {
+   font-size: 18px;
+   font-weight: 600;
+   box-shadow: 0.5px 0.5px 4px -1px var(--buttons-all-app);
+}
+
+.disabledp {
+   pointer-events: none;
+   background-color: var(--buttons-all-app);
+   border-color: var(--bs-btn-disabled-border-color);
+   opacity: var(--bs-btn-disabled-opacity);
+}
+
+#title-contact-menu {
+   font-size: 22px;
+}
+
+.pfont-size-input {
+   font-size: 14px;
+}
+
+.progress-bar {
+   width: 75%;
+   position: fixed;
+   top: 5%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   background-color: #ccc;
+   border-radius: 2em;
+   height: 6px;
+   overflow: hidden;
+}
+
+.progress-bar::before {
+   content: "";
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   background-color: var(--buttons-all-app);
+   transform: translateX(-100%);
+   animation: fill-bar 1.3s ease-in-out forwards;
+}
+
+@keyframes fill-bar {
+   to {
+      transform: translateX(0%);
+   }
+}
+
+/* responsive */
+@media only screen and (min-width: 1150px) and (max-width: 1450px) {
+   #cloudid {
+      width: 40%;
+      height: 60%;
+      position: fixed;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+   }
+}
+
+@media only screen and (min-width: 1451px) {
+   #cloudid {
+      width: 45%;
+      height: 40%;
+      position: fixed;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+   }
+}
+
+.div-alert-version {
+   width: 100%;
+   height: 40%;
+   position: fixed;
+   top: 28%;
+   left: 50%;
+   text-indent: 10px;
+   transform: translate(-50%, -50%);
+}

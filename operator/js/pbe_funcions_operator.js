@@ -1039,13 +1039,6 @@ const formButton = async (data, busua_cod) => {
                      <input type="text" class="form-control form-control-sm" id="fecha-notificacion-${element.bot_cod}" name="fecha-notificacion-${element.bot_cod}" value="${element.fecha_notificacion === null ? 'No registra' : `${dateFormat(fecha_notificacion)} a las ${horaFormateada(fecha_notificacion)}`}" title="Fecha de notificaci&oacute;n del servicio" disabled>
                   </div>
                   <div class="col-lg-3 mb-3">
-                     <label for="tipo-cod-user-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Tipo de bot&oacute;n:</label>
-                     <select class="form-select form-select-sm" id="tipo-cod-user-${element.bot_cod}" name="tipo-cod-user-${element.bot_cod}" title="Tipo de bot&oacute;n" disabled>
-                        <option value="1" ${tipo_cod === 1 ? 'selected' : ''}>1 - Bot&oacute;n de emergencia SIP - M&oacute;vil</option>
-                        <option value="2" ${tipo_cod === 2 ? 'selected' : ''}>2 - Bot&oacute;n de emergencia SIP - Est&aacute;tico</option>
-                     </select>
-                  </div>
-                  <div class="col-lg-3 mb-3">
                      <label for="sip-username-user-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Sip Username:</label>
                      <input type="text" class="form-control form-control-sm" id="sip-username-user-${element.bot_cod}" name="sip-username-user-${element.bot_cod}" title="Sip Username del servicio" value="${element.sip_username}" disabled>
                   </div>
@@ -3504,11 +3497,13 @@ const selectTipoServiceNoti = async (select) => {
 
    try {
 
-      // table
-      const table = $('#table-noti-services').DataTable();
-
       // cod dominio
       const dom_cod = document.getElementById('dom_cod');
+
+      await spinnerOpen(`btn-plantilla-${dom_cod.value}`);
+
+      // table
+      const table = $('#table-noti-services').DataTable();
 
       // check masivo
       const check = document.getElementById('check-masivo');
@@ -3559,8 +3554,8 @@ const selectTipoServiceNoti = async (select) => {
                fecha_f,
                `
                <div class="d-flex align-items-center justify-content-around">
-                  <input type="checkbox" id="chek-noti-user-${element.busua_cod}" name="checksNotiUserPBE" value="${element.busua_cod}" aria-describedby="check" title="Check usuario ${element.cloud_username}">
-                  <i class="fa-solid fa-envelope-open-text fa-xl link-pointer text-success" id="noti-user-${element.busua_cod}" onclick="checkNotiUserService(${parseInt(element.busua_cod)})" title="Notificar servicio al usuario"></i>
+                  <input type="checkbox" id="chek-noti-user-${element.busua_cod}" name="checksNotiUserPBE" value="${element.busua_cod}" aria-describedby="check" title="Check usuario ${element.cloud_username}" ${p3 === 2 ? '' : 'disabled'}>
+                  <i class="fa-solid fa-envelope-open-text fa-xl link-pointer ${p3 === 2 ? 'text-success' : 'text-secondary'}" id="noti-user-${element.busua_cod}" ${p3 === 2 ? `onclick="checkNotiUserService(${parseInt(element.busua_cod)})"` : ''} title="Notificar servicio al usuario"></i>
                </div>
                `,
             ];
@@ -3632,15 +3627,21 @@ const selectTipoServiceNoti = async (select) => {
 
          });
 
-         check.disabled = false;
-         btn.classList.remove('disabledp');
-
+         if (p3 === 2) {
+            check.disabled = false;
+            btn.classList.remove('disabledp');
+         }
+         
       }
 
    } catch (error) {
 
       console.error(error);
       await showErrorSystems(error_system);
+
+   } finally {
+
+      await spinnerClose(`btn-plantilla-${dom_cod.value}`, 'Plantilla');
 
    }
 
@@ -3866,6 +3867,7 @@ const dataMenu = async (menu, dom_cod) => {
                               </div>
                               <span id="textbtn-update-data-user">Plantilla</span>
                            </button>
+                           <a class="ms-3 mb-2 link-pointer" target="_blank" title="Descarga instructivo" href="${document.location.origin}/plantillas/instructivo_notificaciones.html">Instructivo</a>
                         </div>
                         <div id="div-info-service-notify-${dom_cod}" class="col-12 table-responsive">
                            <table id="table-noti-services" class="table align-middle py-2">

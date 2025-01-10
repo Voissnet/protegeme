@@ -1455,6 +1455,8 @@ const selectTipoServiceNoti = async (select) => {
       // cod dominio
       const dom_cod = document.getElementById('dom_cod');
 
+      await spinnerOpen(`btn-plantilla-${dom_cod.value}`);
+
       // check masivo
       const check = document.getElementById('check-masivo');
 
@@ -1586,6 +1588,10 @@ const selectTipoServiceNoti = async (select) => {
 
       console.error(error);
       await showErrorSystems(error_system);
+
+   } finally {
+
+      await spinnerClose(`btn-plantilla-${dom_cod.value}`, 'Plantilla');
 
    }
 
@@ -1810,9 +1816,7 @@ const dataMenu = async (menu, dom_cod) => {
                               </div>
                               <span id="textbtn-update-data-user">Plantilla</span>
                            </button>
-                        </div>
-                        <div class="col-12 mb-3">
-                           <a class="ms-2 link-pointer" target="_blank" title="Descarga instructivo" download="Sistema_Notificaciones_servicios.docx" href="${document.location.origin}/plantillas/Sistema_Notificaciones_servicios.docx">Instructivo</a>
+                           <a class="ms-3 mb-2 link-pointer" target="_blank" title="Descarga instructivo" href="${document.location.origin}/plantillas/instructivo_notificaciones.html">Instructivo</a>
                         </div>
                         <div id="div-info-service-notify-${dom_cod}" class="col-12 table-responsive">
                            <table id="table-noti-services" class="table align-middle py-2">
@@ -3363,13 +3367,6 @@ const formButton = async (data, busua_cod) => {
                   <div class="col-lg-3 mb-3">
                      <label for="fecha-notificacion-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Fecha de notificaci&oacute;n:</label>
                      <input type="text" class="form-control form-control-sm" id="fecha-notificacion-${element.bot_cod}" name="fecha-notificacion-${element.bot_cod}" value="${element.fecha_notificacion === null ? 'No registra' : `${dateFormat(fecha_notificacion)} a las ${horaFormateada(fecha_notificacion)}`}" title="Fecha de notificaci&oacute;n del servicio" disabled>
-                  </div>
-                  <div class="col-lg-3 mb-3">
-                     <label for="tipo-cod-user-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Tipo de bot&oacute;n:</label>
-                     <select class="form-select form-select-sm" id="tipo-cod-user-${element.bot_cod}" name="tipo-cod-user-${element.bot_cod}" title="Tipo de bot&oacute;n" disabled>
-                        <option value="1" ${tipo_cod === 1 ? 'selected' : ''}>1 - Bot&oacute;n de emergencia SIP - M&oacute;vil</option>
-                        <option value="2" ${tipo_cod === 2 ? 'selected' : ''}>2 - Bot&oacute;n de emergencia SIP - Est&aacute;tico</option>
-                     </select>
                   </div>
                   <div class="col-lg-3 mb-3">
                      <label for="sip-username-user-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Sip Username:</label>

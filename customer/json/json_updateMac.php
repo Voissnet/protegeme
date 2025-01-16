@@ -28,11 +28,12 @@
       goto result;
    }
 
-   $data    = json_decode(file_get_contents('php://input'), true);
-   $bot_cod = isset($data['bot_cod']) ? intval($data['bot_cod']) : false;
-   $mac     = isset($data['mac']) ? mb_strtoupper($data['mac']) : false;
+   $data       = json_decode(file_get_contents('php://input'), true);
+   $bot_cod    = isset($data['bot_cod']) ? intval($data['bot_cod']) : false;
+   $busua_cod  = isset($data['busua_cod']) ? intval($data['busua_cod']) : false;
+   $mac        = isset($data['mac']) ? $data['mac'] : false;
 
-   if ($bot_cod === false || $mac === false) {
+   if ($bot_cod === false || $busua_cod === false || $mac === false) {
       $message = 'Error: No se pudo modificar MAC - cod: 01';
       $error   = true;
       goto result;
@@ -45,6 +46,7 @@
    $Boton   = new BBoton();
    $Log     = new BLog();
 
+   # verifica mac
    if (strlen($mac) !== 0) {
       if ($Boton->verificaMac($mac, $DB) === true) {
          $message = 'Error: MAC en uso - cod: 02';
@@ -52,13 +54,15 @@
          goto result;
       }
    }
-
+   
+   # busca boton
    if ($Boton->busca($bot_cod, $DB) === false) {
       $message = 'Error: No se pudo modificar MAC - cod: 03';
       $error   = true;
       goto result;
    }
 
+   # actualiza mac
    if ($Boton->actualizaMac($mac, $DB) === false) {
       $message = 'Error: No se pudo modificar MAC - cod: 04';
       $error   = true;

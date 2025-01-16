@@ -188,7 +188,8 @@
 
          $sql                       = "UPDATE BP.BP_BOTON a
                                        SET a.esta_cod = 3,
-                                          a.mac = NULL
+                                          a.mac = NULL,
+                                          a.fecha_notificacion = NULL
                                        WHERE a.bot_cod = :bot_cod";
          
          if ($DB->Execute($sql, $valores))
@@ -233,19 +234,24 @@
          $valores['sip_username']   = $sip_username;
          $valores['dom_cod']        = $dom_cod;
 
-         $sql                       = "SELECT a.bot_cod,
+         $sql                       = "SELECT 
+                                             a.bot_cod,
                                              a.sip_username
-                                       FROM BP.BP_BOTON a,
-                                       BP.BP_USUARIO b,
-                                       BP.BP_GRUPO c,
-                                       BP.BP_DOMINIO d
-                                       WHERE a.busua_cod = b.busua_cod
-                                       AND b.group_cod = c.group_cod
-                                       AND c.dom_cod = d.dom_cod
-                                       AND b.esta_cod IN (1, 2)
-                                       AND a.esta_cod IN (1, 2)
-                                       AND a.sip_username = :sip_username
-                                       AND d.dom_cod = :dom_cod";
+                                       FROM 
+                                          BP.BP_BOTON a
+                                          INNER JOIN BP.BP_USUARIO b ON a.busua_cod = b.busua_cod
+                                          INNER JOIN BP.BP_GRUPO c ON b.group_cod = c.group_cod
+                                          INNER JOIN BP.BP_DOMINIO d ON c.dom_cod = d.dom_cod
+                                          INNER JOIN FG.FC_GATEWAY_NUMERO e 
+                                             ON d.gate_cod = e.gate_cod
+                                             AND e.user_esta_cod = 1
+                                             AND e.admin_esta_cod = 1
+                                             AND e.numero = '533' || e.gate_cod || :sip_username
+                                       WHERE 
+                                          b.esta_cod IN (1, 2)
+                                          AND a.esta_cod IN (1, 2)
+                                          AND a.sip_username = :sip_username
+                                          AND d.dom_cod = :dom_cod";
          
          if ($DB->Query($sql, $valores)) 
          {

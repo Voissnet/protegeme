@@ -172,6 +172,7 @@
    # 3 - Botón de emergencia Estándar
    # 4 - Widget
    # 5 - Tracker
+   # 6 - Web RTC
    # Default: Otros productos
 
    # ESTO ES PARA SABER CON EXACTITUD EN QUE COLUMNAS ESTAN LAS VARIABLES
@@ -269,8 +270,8 @@
 
                            for ($z = 0; $z < 1; $z++) {
 
-                              $sip_username     = Parameters::generaSipUsername($bpid, strlen($bpid)); # como es nuevo parte en 1
-                              $sip_display_name = Parameters::generaSipUsername($bpid, strlen($bpid)); # como es nuevo parte en 1
+                              $sip_username     = Parameters::generaSipUsername($bpid, strlen($bpid), 1); # como es nuevo parte en 1
+                              $sip_display_name = Parameters::generaSipUsername($bpid, strlen($bpid), 1); # como es nuevo parte en 1
 
                               # tenemos que saber cual sip_username esta disponible dentro del dominio
                               if ($Boton->verificaUserBoton($sip_username, $dom_cod, $DB) === false) {
@@ -278,7 +279,7 @@
                                  $sip_password = Parameters::generaPasswordSIP(7); # codigo generado por Sistema
 
                                  # registra boton
-                                 if ($Boton->insert($sip_username, $sip_password, $sip_display_name, $Usuario->busua_cod, 1, '', '', '', $DB) === false) {
+                                 if ($Boton->insert($sip_username, $sip_password, $sip_display_name, $Usuario->busua_cod, $tipo_cod, '', '', '', $DB) === false) {
                                     
                                     $DB->Rollback();
                                     array_push($messages, '<span class="text-danger">No se logro crear servicio usuario - cod: 08</span>');
@@ -322,6 +323,7 @@
                            }
 
                            break;
+
                         case 2:
 
                            # 2 - Botón de emergencia SIP - Estático
@@ -346,8 +348,8 @@
 
                            for ($z = 0; $z < 1; $z++) {
                   
-                              $sip_username     = Parameters::generaSipUsernameFIJO($bpid, strlen($bpid)); # como es nuevo parte en 1
-                              $sip_display_name = Parameters::generaSipUsernameFIJO($bpid, strlen($bpid)); # como es nuevo parte en 1
+                              $sip_username     = Parameters::generaSipUsername($bpid, strlen($bpid), 2); # como es nuevo parte en 1
+                              $sip_display_name = Parameters::generaSipUsername($bpid, strlen($bpid), 2); # como es nuevo parte en 1
             
                               # tenemos que saber cual sip_username esta disponible dentro del dominio
                               if ($Boton->verificaUserBoton($sip_username, $dom_cod, $DB) === false) {
@@ -355,10 +357,10 @@
                                  $sip_password = Parameters::generaPasswordSIP(7); # codigo generado por Sistema
             
                                  # registra boton
-                                 if ($Boton->insert($sip_username, $sip_password, $sip_display_name, $Usuario->busua_cod, 2, $localizacion, Parameters::obtieneCoordenadas($localizacion), $mac, $DB) === false) {
+                                 if ($Boton->insert($sip_username, $sip_password, $sip_display_name, $Usuario->busua_cod, $tipo_cod, $localizacion, Parameters::obtieneCoordenadas($localizacion), $mac, $DB) === false) {
                                     
                                     $DB->Rollback();
-                                    array_push($messages, '<span class="text-danger">No se logro crear servicio usuario - cod: 11</span>');
+                                    array_push($messages, '<span class="text-danger">No se logro crear servicio usuario - cod: 10</span>');
                                     $error = true;
                                     goto result;
 
@@ -368,7 +370,7 @@
                                  if ($GatewayNumero->PideAsignado($Dominio->gate_cod, 2, 20, $sip_username, $DB) === false) {
                                     
                                     $DB->Rollback();
-                                    array_push($messages, '<span class="text-danger">Error: No se pudo aprovisionar N&uacute;mero SOS - cod: 12</span>');
+                                    array_push($messages, '<span class="text-danger">Error: No se pudo aprovisionar N&uacute;mero SOS - cod: 11</span>');
                                     $error = true;
                                     goto result;
 
@@ -410,7 +412,7 @@
                            if ($OtroProd->inserta(4, $Usuario->busua_cod, $cloud_username, $cloud_password, $DB) === false) {
                               
                               $DB->Rollback();
-                              array_push($messages, '<span class="text-danger">Error: No se pudo aprovisionar N&uacute;mero SOS - cod: 14</span>');
+                              array_push($messages, '<span class="text-danger">Error: No se pudo aprovisionar N&uacute;mero SOS - cod: 12</span>');
                               $error = true;
                               goto result;
 
@@ -445,7 +447,7 @@
                            if ($tipo_tracker === null || $causa === null) {
                               
                               $DB->Rollback();
-                              array_push($messages, '<span class="text-danger">No se logro crear servicio de tracker - cod: 15</span>');
+                              array_push($messages, '<span class="text-danger">No se logro crear servicio de tracker - cod: 13</span>');
                               $error = true;
                               goto result;
 
@@ -454,7 +456,7 @@
                            if ($Tracker->insert($Usuario->busua_cod, $tipo_tracker, $causa, $DB) === false) {
                               
                               $DB->Rollback();
-                              array_push($messages, '<span class="text-danger">No se logro crear servicio de tracker - cod: 16</span>');
+                              array_push($messages, '<span class="text-danger">No se logro crear servicio de tracker - cod: 14</span>');
                               $error = true;
                               goto result;
 
@@ -477,6 +479,70 @@
 
                            break;
 
+                        case 6:
+
+                           # 1 - Web RTC
+
+                           $services_desc .= ' Web RTC | ';
+
+                           $bpid = 1;
+
+                           for ($z = 0; $z < 1; $z++) {
+
+                              $sip_username     = Parameters::generaSipUsername($bpid, strlen($bpid), 3); # como es nuevo parte en 1
+                              $sip_display_name = Parameters::generaSipUsername($bpid, strlen($bpid), 3); # como es nuevo parte en 1
+
+                              # tenemos que saber cual sip_username esta disponible dentro del dominio
+                              if ($Boton->verificaUserBoton($sip_username, $dom_cod, $DB) === false) {
+
+                                 $sip_password = Parameters::generaPasswordSIP(7); # codigo generado por Sistema
+
+                                 # registra boton
+                                 if ($Boton->insert($sip_username, $sip_password, $sip_display_name, $Usuario->busua_cod, $tipo_cod, '', '', '', $DB) === false) {
+                                    
+                                    $DB->Rollback();
+                                    array_push($messages, '<span class="text-danger">No se logro crear servicio usuario - cod: 15</span>');
+                                    $error = true;
+                                    goto result;
+
+                                 }
+
+                                 # registro de numero
+                                 if ($GatewayNumero->PideAsignado($Dominio->gate_cod, 2, 20, $sip_username, $DB) === false) {
+                                    
+                                    $DB->Rollback();
+                                    array_push($messages, '<span class="text-danger">Error: No se pudo aprovisionar N&uacute;mero SOS - cod: 16</span>');
+                                    $error = true;
+                                    goto result;
+
+                                 }
+
+                                 # notifica servicio
+                                 if ($notify_service === 1) {
+
+                                    $status_notify = true;
+
+                                    array_push($data_notify, [
+                                       'token'           => Parameters::openCypher('encrypt', 'SResDvO2!9$32#01widJys56!?1ads'),
+                                       'dom_cod'         => Parameters::openCypher('encrypt', $Dominio->dom_cod),
+                                       'busua_cod'       => Parameters::openCypher('encrypt', $Usuario->busua_cod),
+                                       'tipo_cod'        => Parameters::openCypher('encrypt', $tipo_cod),
+                                       'cloud_password'  => Parameters::openCypher('encrypt', $cloud_password)
+                                    ]);
+                  
+                                 }
+
+                              } else {
+
+                                 $z--;       # restamos 1 para que se repita nuevamente
+                                 $bpid++;    # aumentamos 1
+
+                              }
+
+                           }
+
+                           break;
+
                         default:
 
                            # Default: Otros productos
@@ -485,7 +551,7 @@
                            if ($TipoBoton->busca($tipo_cod, $DB) === false) {
                               $DB->Rollback();
                               $error = true;
-                              $mensaje = 'No se pudo aprovisionar servicio - cod: 17';
+                              array_push($messages, '<span class="text-danger">No se pudo aprovisionar servicio - cod: 17</span>');
                               goto result;
                            }
 

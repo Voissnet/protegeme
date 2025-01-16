@@ -1,5 +1,19 @@
 <?
-   header('Access-Control-Allow-Origin: https://newbackoffice.lanube.cl'); 
+   # lista de dominios permitidos
+   $allowed_origins = [
+      'https://newbackoffice.lanube.cl',
+      'https://newbackoffice.redvoiss.net'
+   ];
+
+   # obtener el dominio de origen de la solicitud
+   $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+   # Verificar si el dominio de origen está en la lista permitida
+   if (in_array($origin, $allowed_origins)) {
+      header('Access-Control-Allow-Origin: ' . $origin);
+   }
+
+   # establecer otros encabezados
    header('Access-Control-Allow-Methods: POST');
    header('Access-Control-Allow-Headers: Content-Type');
 
@@ -153,6 +167,15 @@
    # verifica si hay password
    $status_password  = (stripos($contenido, '{password}') !== false) ? true : false;
 
+   # TIPO DE SERVICIOS:
+   # 1 - Botón de emergencia SIP - Móvil
+   # 2 - Botón de emergencia SIP - Estático
+   # 3 - Botón de emergencia Estándar
+   # 4 - Widget
+   # 5 - Tracker
+   # 6 - Web RTC
+   # Default: Otros productos
+
    switch ($tipo_cod) {
 
       case 1:
@@ -214,7 +237,7 @@
          $fecha_notificacion  = $Boton->fecha_notificacion;
 
          # asunto de correo
-         $subject = 'Notificación de credenciales ' . (intval($Dominio->demo) === 1 ? 'Demo ' : '') . 'Protegeme';
+         $subject = 'Notificación servicio ' . (intval($Dominio->demo) === 1 ? 'demo ' : '') . 'Protegeme';
 
          break;
 
@@ -277,7 +300,7 @@
          $fecha_notificacion  = $Boton->fecha_notificacion;
 
          # asunto de correo
-         $subject = 'Notificación de credenciales ' . (intval($Dominio->demo) === 1 ? 'Demo ' : '') . 'Protegeme';
+         $subject = 'Notificación servicio ' . (intval($Dominio->demo) === 1 ? 'demo ' : '') . 'Protegeme';
 
          break;
 
@@ -292,7 +315,7 @@
          }
 
          # asunto de correo
-         $subject = 'Notificación de credenciales ' . (intval($Dominio->demo) === 1 ? 'Demo ' : '') . 'Protegeme';
+         $subject = 'Notificación servicio ' . (intval($Dominio->demo) === 1 ? 'demo ' : '') . 'Protegeme';
 
          break;
 
@@ -339,7 +362,7 @@
          $fecha_notificacion  = $Otros->fecha_notificacion;
 
          # asunto de correo
-         $subject = 'Notificación de credenciales ' . (intval($Dominio->demo) === 1 ? 'Demo ' : '') . 'Protegeme';
+         $subject = 'Notificación servicio ' . (intval($Dominio->demo) === 1 ? 'demo ' : '') . 'Protegeme';
 
          break;
 
@@ -354,7 +377,70 @@
          }
 
          # asunto de correo
-         $subject = 'Notificación de credenciales ' . (intval($Dominio->demo) === 1 ? 'Demo ' : '') . 'Protegeme';
+         $subject = 'Notificación servicio ' . (intval($Dominio->demo) === 1 ? 'demo ' : '') . 'Protegeme';
+
+         break;
+
+      case 6:
+
+         # Web RTC
+
+         $tipo_servicio = 'Web RTC';
+
+         # busca boton del usuario
+         if ($Boton->buscaUserTipo($Usuario->busua_cod, $tipo_cod, $DB) === false) {
+
+            $error      = true;
+            $statusCode = 400;
+            $message    = 'Solicitud incorrecta. El archivo no se pudo procesar (20).';
+            goto result;
+
+         }
+
+         # servicio debe estar activo
+         if (intval($Boton->esta_cod) !== 1) {
+
+            $error      = true;
+            $statusCode = 400;
+            $message    = 'Solicitud incorrecta. El archivo no se pudo procesar (21).';
+            goto result;
+
+         }
+
+         if ($op === 2 && $status_password === true) {
+
+            $cloud_password   = Parameters::generaPasswordSIP(7);
+            $p_peppered       = hash_hmac('sha256', $cloud_password, Parameters::PEPPER);
+            $encriptado       = password_hash($p_peppered, PASSWORD_BCRYPT);
+
+            # actualiza cloud_password
+            if ($Usuario->actualizaCloudPassword($encriptado, $DB) === false) {
+
+               $error      = true;
+               $statusCode = 400;
+               $message    = 'Solicitud incorrecta. El archivo no se pudo procesar (22).';
+               goto result;
+
+            }
+
+            $password_email   = $cloud_password;
+
+         }
+
+         # actualiza fecha de notificacion
+         if ($Boton->actualizaNotificacion($DB) === false) {
+
+            $error      = true;
+            $statusCode = 400;
+            $message    = 'Solicitud incorrecta. El archivo no se pudo procesar (23).';
+            goto result;
+
+         }
+
+         $fecha_notificacion  = $Boton->fecha_notificacion;
+
+         # asunto de correo
+         $subject = 'Notificación servicio ' . (intval($Dominio->demo) === 1 ? 'demo ' : '') . 'Protegeme';
 
          break;
          

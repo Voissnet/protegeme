@@ -75,8 +75,8 @@
                                           a.busua_cod,
                                           a.username,
                                           a.esta_cod,
-                                          TO_CHAR(a.fecha_creacion, 'DD-MM-YYYY HH24:MI:SS') fecha_creacion,
-                                          TO_CHAR(a.fecha_notificacion, 'DD-MM-YYYY HH24:MI:SS') fecha_notificacion
+                                          TO_CHAR(a.fecha_creacion, 'MM-DD-YYYY HH24:MI:SS') fecha_creacion,
+                                          TO_CHAR(a.fecha_notificacion, 'MM-DD-YYYY HH24:MI:SS') fecha_notificacion
                                     FROM BP.BP_OTROS_PRODUCTOS a,
                                     BP.BP_USUARIO b,
                                     BP.BP_TIPO_BOTON c

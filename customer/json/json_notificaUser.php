@@ -82,6 +82,15 @@
       goto result;
    }
 
+   # TIPO DE SERVICIOS:
+   # 1 - Botón de emergencia SIP - Móvil
+   # 2 - Botón de emergencia SIP - Estático
+   # 3 - Botón de emergencia Estándar
+   # 4 - Widget
+   # 5 - Tracker
+   # 6 - Web RTC
+   # Default: Otros productos
+
    switch ($tipo_cod) {
 
       case 1:
@@ -169,6 +178,24 @@
          if (intval($Tracker->esta_cod) !== 1) {
             $error   = true;
             $message = 'Error: No se encontro servicio del usuario - cod: 15';
+            goto result;
+         }
+
+         break;
+
+      case 6:
+
+         # Web RTC
+
+         if ($Boton->buscaUserTipo($Usuario->busua_cod, $tipo_cod, $DB) === false) {
+            $error   = true;
+            $message = 'Error: No se encontro servicio del usuario - cod: 16';
+            goto result;
+         }
+
+         if (intval($Boton->esta_cod) !== 1) {
+            $error   = true;
+            $message = 'Error: Usuario no esta activo, no se puede notificar - cod: 17';
             goto result;
          }
 

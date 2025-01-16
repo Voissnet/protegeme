@@ -1,7 +1,7 @@
 <?
    class Parameters
    {
-      const WEB_NAME                   = "pbe.lanube.cl";                                                            /* nombre del sitio */
+      const WEB_NAME                   = "pbe.redvoiss.net";                                                            /* nombre del sitio */
       const WEB_PATH                   = "https://" . self::WEB_NAME;                                                /* Path raiz del sitio */
       const PATH                       = "/var/www/" . self::WEB_NAME . "/htdocs";                                   /* Raiz del sitio en linux */
       const PATH_LOG                   = "/var/www/" . self::WEB_NAME . "/logs";                                     /* Path LOGS UNIX  sitio */
@@ -35,20 +35,30 @@
          return $value;
       }
 
-      // obtiene sip username
-      public static function generaSipUsername($id, $leght)
+      // genera sip_username para boton movil
+      public static function generaSipUsername($id, $leght, $op)
       {
-         $sip_i = '10000';                                     // largo inicial del sip_username, total 7 de largo
-         $result = (substr($sip_i, 0, -$leght) . $id);         // largo final
-         return $result;
-      }
 
-      // obtiene sip username fijo
-      public static function generaSipUsernameFIJO($id, $leght) 
-      {
-         $sip_i = '20000';                                     // largo inicial del sip_username, total 7 de largo
-         $result = (substr($sip_i, 0, -$leght) . $id);         // largo final
+         $sip_i = '';
+
+         # largo inicial del sip_username, total 7 de largo
+         switch ($op) {
+            case 1:
+               $sip_i = '10000';
+               break;
+            case 2:
+               $sip_i = '20000';
+               break;
+            case 3:
+               $sip_i = '30000';
+               break;
+         }
+
+         # largo final
+         $result = (substr($sip_i, 0, -$leght) . $id);
+         
          return $result;
+
       }
 
       // crea audio segun el nombre ingresado
@@ -167,6 +177,10 @@
             case 5:
                # Tracker
                $servicio = 'stracker';
+               break;
+            case 6:
+               # Tracker
+               $servicio = 'swebrtc';
                break;
             default:
                # no existe

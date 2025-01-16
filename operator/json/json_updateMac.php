@@ -28,45 +28,43 @@
       goto result;
    }
 
-   $data          = json_decode(file_get_contents('php://input'), true);                  // datos
-   $busua_cod     = isset($data['busua_cod']) ? intval($data['busua_cod']) : false;       // busua_cod
-   $mac           = isset($data['mac']) ? $data['mac'] : false;                           // mac
+   $data       = json_decode(file_get_contents('php://input'), true);
+   $bot_cod    = isset($data['bot_cod']) ? intval($data['bot_cod']) : false;
+   $busua_cod  = isset($data['busua_cod']) ? intval($data['busua_cod']) : false;
+   $mac        = isset($data['mac']) ? $data['mac'] : false;
 
-   if ($busua_cod === false || $mac === false) {
-      $message = 'Error: No se pudo modificar MAC - cod: 001';
+   if ($bot_cod === false || $busua_cod === false || $mac === false) {
+      $message = 'Error: No se pudo modificar MAC - cod: 01';
       $error   = true;
       goto result;
    }
 
    // clases
-   require_once 'BUsuario.php';
    require_once 'BBoton.php';
    require_once 'BOperadorLog.php';
 
-   $Usuario = new BUsuario();
    $Boton   = new BBoton();
    $Log     = new BOperadorLog();
 
-   if ($Boton->verificaMac($mac, $DB) === true) {
-      $message = 'Error: MAC en uso - cod: 002';
+   # verifica mac
+   if (strlen($mac) !== 0) {
+      if ($Boton->verificaMac($mac, $DB) === true) {
+         $message = 'Error: MAC en uso - cod: 02';
+         $error   = true;
+         goto result;
+      }
+   }
+   
+   # busca boton
+   if ($Boton->busca($bot_cod, $DB) === false) {
+      $message = 'Error: No se pudo modificar MAC - cod: 03';
       $error   = true;
       goto result;
    }
 
-   if ($Usuario->buscaUser($busua_cod, $DB) === false) {
-      $message = 'Error: No se pudo modificar MAC - cod: 003';
-      $error   = true;
-      goto result;
-   }
-
-   if ($Boton->buscaUserActivo($busua_cod, $DB) === false) {
-      $message = 'Error: No se pudo modificar MAC - cod: 004';
-      $error   = true;
-      goto result;
-   }
-
+   # actualiza mac
    if ($Boton->actualizaMac($mac, $DB) === false) {
-      $message = 'Error: No se pudo modificar MAC - cod: 005';
+      $message = 'Error: No se pudo modificar MAC - cod: 04';
       $error   = true;
       goto result;
    }

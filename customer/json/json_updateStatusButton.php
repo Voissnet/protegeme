@@ -69,6 +69,7 @@
    # 3 - Botón de emergencia Estándar
    # 4 - Widget
    # 5 - Tracker
+   # 6 -  Web RTC
    # Default: Otros productos
 
    $tipo = '';
@@ -84,28 +85,28 @@
          # Busca boton
          if ($Boton->busca($id, $DB) === false) {
             $error = true;
-            $mensaje = 'Error: No fue posible encontrar usuario - cod: 07';
+            $mensaje = 'Error: No fue posible encontrar usuario - cod: 04';
             goto result;
          }
       
          # Si el usuario no es el mismo no pasa
          if ($Boton->busua_cod !== $Usuario->busua_cod) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 08';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 05';
             goto result;
          }
 
          # Si esta eliminado no actualiza
          if (intval($Boton->esta_cod) === 3) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 09';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 06';
             goto result;
          }
       
          # Cambia estado
          if ($Boton->actualizaEstado($esta_cod, $DB) === false) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 10';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 07';
             goto result;
          }
 
@@ -120,28 +121,28 @@
          # Busca boton
          if ($Boton->busca($id, $DB) === false) {
             $error = true;
-            $mensaje = 'Error: No fue posible encontrar usuario - cod: 11';
+            $mensaje = 'Error: No fue posible encontrar usuario - cod: 08';
             goto result;
          }
       
          # Si el usuario no es el mismo no pasa
          if ($Boton->busua_cod !== $Usuario->busua_cod) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 12';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 09';
             goto result;
          }
       
          # Si esta eliminado no actualiza
          if (intval($Boton->esta_cod) === 3) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 13';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 10';
             goto result;
          }
       
          # Cambia estado
          if ($Boton->actualizaEstado($esta_cod, $DB) === false) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 14';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 11';
             goto result;
          }
 
@@ -156,21 +157,57 @@
          # Busca tracker
          if ($Tracker->busca($busua_cod, $DB) === false) {
             $error = true;
-            $mensaje = 'Error: No fue posible encontrar usuario - cod: 04';
+            $mensaje = 'Error: No fue posible encontrar usuario - cod: 12';
             goto result;
          }
 
          # Si esta eliminado no actualiza
          if (intval($Tracker->esta_cod) === 3) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 05';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 13';
             goto result;
          }
 
          # Cambia estado
          if ($Tracker->actualizaEstado($esta_cod, $DB) === false) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 06';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 14';
+            goto result;
+         }
+
+         break;
+
+      case 6:
+
+         # 6 - Web RTC
+
+         $tipo = 'Web RTC';
+
+         # Busca boton
+         if ($Boton->busca($id, $DB) === false) {
+            $error = true;
+            $mensaje = 'Error: No fue posible encontrar usuario - cod: 15';
+            goto result;
+         }
+      
+         # Si el usuario no es el mismo no pasa
+         if ($Boton->busua_cod !== $Usuario->busua_cod) {
+            $error = true;
+            $mensaje = 'Error: No es posible cambiar estado - cod: 16';
+            goto result;
+         }
+
+         # Si esta eliminado no actualiza
+         if (intval($Boton->esta_cod) === 3) {
+            $error = true;
+            $mensaje = 'Error: No es posible cambiar estado - cod: 17';
+            goto result;
+         }
+      
+         # Cambia estado
+         if ($Boton->actualizaEstado($esta_cod, $DB) === false) {
+            $error = true;
+            $mensaje = 'Error: No es posible cambiar estado - cod: 18';
             goto result;
          }
 
@@ -182,7 +219,7 @@
          
          if ($Otros->busca($id, $DB) === false) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 15';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 19';
             goto result;
          }
 
@@ -191,21 +228,21 @@
          # Si el usuario no es el mismo no pasa
          if ($Otros->busua_cod !== $Usuario->busua_cod) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 16';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 20';
             goto result;
          }
       
          # Si esta eliminado no actualiza
          if (intval($Otros->esta_cod) === 3) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 17';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 21';
             goto result;
          }
       
          # Cambia estado
          if ($Otros->actualizaEstado($esta_cod, $DB) === false) {
             $error = true;
-            $mensaje = 'Error: No es posible cambiar estado - cod: 18';
+            $mensaje = 'Error: No es posible cambiar estado - cod: 22';
             goto result;
          }
 

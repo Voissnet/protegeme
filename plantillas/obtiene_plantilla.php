@@ -1,7 +1,20 @@
-
 <?
-   header('Access-Control-Allow-Origin: https://newbackoffice.lanube.cl'); 
-   header('Access-Control-Allow-Methods: GET');
+   # lista de dominios permitidos
+   $allowed_origins = [
+      'https://newbackoffice.lanube.cl',
+      'https://newbackoffice.redvoiss.net'
+   ];
+
+   # obtener el dominio de origen de la solicitud
+   $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+   # Verificar si el dominio de origen está en la lista permitida
+   if (in_array($origin, $allowed_origins)) {
+      header('Access-Control-Allow-Origin: ' . $origin);
+   }
+
+   # establecer otros encabezados
+   header('Access-Control-Allow-Methods: POST');
    header('Access-Control-Allow-Headers: Content-Type');
 
    require_once 'Parameters.php';

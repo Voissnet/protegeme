@@ -55,21 +55,21 @@
    $Tracker = new BTracker();
    $Log     = new BOperadorLog();
 
-   // busca usuario
+   # busca usuario
    if ($Usuario->buscaUser($busua_cod, $DB) === false) {
       $error   = true;
       $message = 'Error: No se encuentra usuario - cod: 02';
       goto result;
    }
 
-   // busca grupo
+   # busca grupo
    if ($Grupo->busca($Usuario->group_cod, $DB) === false) {
       $error   = true;
       $message = 'Error: No se grupo del usuario - cod: 03';
       goto result;
    }
 
-   // busca dominio
+   # busca dominio
    if ($Dominio->busca($Grupo->dom_cod, $DB) === false) {
       $error   = true;
       $message = 'Error: No se dominio del usuario - cod: 04';
@@ -81,6 +81,15 @@
       $message = 'Error: dominio no coincide con usuario - cod: 05';
       goto result;
    }
+
+   # TIPO DE SERVICIOS:
+   # 1 - Botón de emergencia SIP - Móvil
+   # 2 - Botón de emergencia SIP - Estático
+   # 3 - Botón de emergencia Estándar
+   # 4 - Widget
+   # 5 - Tracker
+   # 6 - Web RTC
+   # Default: Otros productos
 
    switch ($tipo_cod) {
 
@@ -174,11 +183,29 @@
 
          break;
 
+      case 6:
+
+         # Web RTC
+
+         if ($Boton->buscaUserTipo($Usuario->busua_cod, $tipo_cod, $DB) === false) {
+            $error   = true;
+            $message = 'Error: No se encontro servicio del usuario - cod: 16';
+            goto result;
+         }
+
+         if (intval($Boton->esta_cod) !== 1) {
+            $error   = true;
+            $message = 'Error: Usuario no esta activo, no se puede notificar - cod: 17';
+            goto result;
+         }
+
+         break;
+
       default:
 
          # Servicio no existe
          $error   = true;
-         $message = 'Error: Servicio no encontrado - cod: 16';
+         $message = 'Error: Servicio no encontrado - cod: 18';
          goto result;
 
          break;

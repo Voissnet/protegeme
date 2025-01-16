@@ -29,16 +29,16 @@
       goto result;
    }
 
-   // datos
+   # datos
    $busua_cod     = isset($_POST['busua_cod']) ? intval($_POST['busua_cod']) : false;
 
    if ($busua_cod === false) {
-      $errores = true;
+      $error = true;
       $message = 'Error: No se registran datos - cod: 01';
       goto result;
    }
 
-   // Clases
+   # Clases
    require_once 'BGateway.php';
    require_once 'BGatewayNumero.php';
    require_once 'BGLBLnumeroReal.php';
@@ -65,30 +65,30 @@
    $ContactoSMS   = new BContactosSMS();
    $Log           = new BOperadorLog();
 
-   // Busca al Usuario
+   # Busca al Usuario
    if ($Usuario->buscaUser($busua_cod, $DB) === false) {
       $error = true;
       $message = 'No se registra Usuario';
       goto result;
    }
 
-   // Busca al grupo
+   # Busca al grupo
    if ($Grupo->busca($Usuario->group_cod, $DB) === false) {
       $error = true;
       $message = 'No se registra grupo del Usuario';
       goto result;
    }
 
-   // Busca dominio segun el grupo
+   # Busca dominio segun el grupo
    if ($Dominio->busca($Grupo->dom_cod, $DB) === false) {
       $error = true;
       $message = 'No se registra dominio del Usuario';
       goto result;
    }
 
-   // Busca Adaptador SOS
+   # Busca Adaptador SOS
    if ($Gateway->buscaGatewaySOS($Dominio->gate_cod, $DB) === false) {
-      $errores = true;
+      $error = true;
       $message = 'Error: No se registra Servicio De Emergencia - cod: 05';
       goto result;
    }
@@ -101,26 +101,29 @@
 
       switch ($Boton->tipo_cod) {
          case '1':
-            $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username));
+            $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 1);
             break;
          case '2':
-            $sip_username = Parameters::generaSipUsernameFIJO($Boton->sip_username, strlen($Boton->sip_username));
+            $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 2);
+            break;
+         case '6':
+            $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 3);
             break;
       }
 
-      // busca Numero SOS
+      # busca Numero SOS
       if ($GatewayNumero->buscaNumSOS('533' . $Gateway->gate_cod . $sip_username, $Gateway->gate_cod, $DB2) === true) {
 
-         // eliminamos numero interno
+         # eliminamos numero interno
          if ($GatewayNumero->delete(2, $DB2) === false) {
-            $errores = true;
+            $error = true;
             $message = 'Error: No se pudo eliminar Servicio De Emergencia - cod: 06';
             goto result;
          }
 
-         // liberamos numero real
+         # liberamos numero real
          if ($NumeroReal->ActualizaInterno($GatewayNumero->numero_real, '', '', $DB2) === false) {
-            $errores = true;
+            $error = true;
             $message = 'Error: No se pudo eliminar Servicio De Emergencia - cod: 07';
             goto result;
          }
@@ -128,7 +131,7 @@
       }
 
       if ($Boton->delete($DB2) === false) {
-         $errores = true;
+         $error = true;
          $message = 'Error: No se pudo eliminar el boton - cod: 08';
          goto result;
       }
@@ -136,11 +139,11 @@
       $statService = $Boton->siguienteUserActivo($DB);
    }
 
-   // Consulta si el Usuario tenia servicio de tracker
+   # Consulta si el Usuario tenia servicio de tracker
    if ($Tracker->busca($Usuario->busua_cod, $DB) === true) {
 
       if ($Tracker->actualizaEstado(3, $DB) === false) {
-         $errores = true;
+         $error = true;
          $message = 'Error: No se pudo eliminar el tracker - cod: 09';
          goto result;
       }
@@ -148,41 +151,41 @@
    }
 
    if ($Usuario->delete($DB) === false) {
-      $errores = true;
+      $error = true;
       $message = 'Error: No se pudo eliminar Usuario - cod: 10';
       goto result;
    }
 
-   // elimina contatcos de emrgencia llamadas
+   # elimina contatcos de emrgencia llamadas
    $stat = $ContactoLlama->buscaContactosD($busua_cod, $DB);
 
    while ($stat) {
       if ($ContactoLlama->deleteAll($DB2) === false) {
-         $errores = true;
+         $error = true;
          $message = 'Error: No se pudo eliminar los contatcos de emergencia - Llamadas - cod: 11';
          goto result;
       }
       $stat = $ContactoLlama->siguiente($DB);
    }
  
-   // elimina contactos de emergencia SMS
+   # elimina contactos de emergencia SMS
    $stat2 = $ContactoSMS->buscaContactosD($busua_cod, $DB);
 
    while ($stat2) {
       if ($ContactoSMS->deleteAll($DB2) === false) {
-         $errores = true;
+         $error = true;
          $message = 'Error: No se pudo eliminar los contactos de emergencia - SMS - cod: 12';
          goto result;
       }
       $stat2 = $ContactoSMS->siguiente($DB);
    }
  
-   // elimina otros productos
+   # elimina otros productos
    $stat3 = $Otros->buscaProducto($Usuario->busua_cod, $DB);
 
    while ($stat3) {
       if ($Otros->actualizaEstado(3, $DB2) === false) {
-         $errores = true;
+         $error = true;
          $message = 'Error: No se pudo eliminar otros servicios - cod: 13';
          goto result;
       }
@@ -192,7 +195,7 @@
    $desc = 'USUARIO BP ELIMINADO | BUSUA_COD: ' . $busua_cod . ' | CLOUD_USERNAME: ' . $Usuario->cloud_username  . ' | NOMBRE USUARIO: ' . $Usuario->nombre . ' | TELÉFONO USUARIO: ' . $Usuario->user_phone . ' | EMAIL: ' . $Usuario->email;
    
    if ($Log->inserta($Operador->oper_cod, $desc, 'operator/json/json_deleteUser.php', $DB) === false) {
-      $errores = true;
+      $error = true;
       $message = 'Error: No se pudo eliminar otros servicios - cod: 14';
       goto result;
    }

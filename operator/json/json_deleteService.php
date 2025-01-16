@@ -76,6 +76,7 @@
    # 3 - Botón de emergencia Estándar
    # 4 - Widget
    # 5 - Tracker
+   # 6 - Web RTC
    # Default: Otros productos
 
    switch ($tipo_cod) {
@@ -112,7 +113,7 @@
             goto result;
          }
 
-         $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username));
+         $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 1);
 
          # busca Numero SOS
          if ($Numero->buscaNumSOS('533' . $Dominio->gate_cod . $sip_username, $Dominio->gate_cod, $DB) === true) {
@@ -146,6 +147,7 @@
          $mensaje = 'Servicio Botón de emergencia SIP - Móvil <span class="text-primary">eliminado</span>';
 
          break;
+
       case 2:
 
          # 2 - Botón de emergencia SIP - Estático
@@ -178,7 +180,7 @@
             goto result;
          }
 
-         $sip_username = Parameters::generaSipUsernameFIJO($Boton->sip_username, strlen($Boton->sip_username));
+         $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 2);
 
          # busca Numero SOS
          if ($Numero->buscaNumSOS('533' . $Dominio->gate_cod . $sip_username, $Dominio->gate_cod, $DB) === true) {
@@ -232,7 +234,7 @@
          $desc = 'SE ELIMINO SERVICO "Widget" A USUARIO | BUSUA_COD: ' . ($Usuario->busua_cod);
          $Log->inserta($Operador->oper_cod, $desc, 'operator/json/json_deleteService.php', $DB);
 
-         $mensaje = 'Servicio ' . $OtrosP->tipo . ' <span class="text-primary">eliminado</span>';
+         $mensaje = 'Servicio Widget <span class="text-primary">eliminado</span>';
 
          break;
 
@@ -261,10 +263,77 @@
 
          break;
 
+      case 6:
+
+         # 6 - Web RTC
+
+         # busca boton
+         if ($Boton->busca($bot_cod, $DB) === false) {
+            $errorres = true;
+            $mensaje = 'Error: Servicio no encontrado - cod: 21';
+            goto result;
+         }
+
+         # si el usuario no es el mismo no pasa
+         if (intval($Usuario->busua_cod) !== intval($Boton->busua_cod)) {
+            $errorres = true;
+            $mensaje = 'Error: Usuario no corresponde al servicio - cod: 22';
+            goto result;
+         }
+
+         # busca contact center
+         if ($Grupo->busca($Usuario->group_cod, $DB) === false) {
+            $errorres = true;
+            $mensaje = 'Error: Contact center no encontrado - cod: 23';
+            goto result;
+         }
+
+         # busca dominio
+         if ($Dominio->busca($Grupo->dom_cod, $DB) === false) {
+            $errorres = true;
+            $mensaje = 'Error: Dominio no encontrado - cod: 24';
+            goto result;
+         }
+
+         $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 3);
+
+         # busca Numero SOS
+         if ($Numero->buscaNumSOS('533' . $Dominio->gate_cod . $sip_username, $Dominio->gate_cod, $DB) === true) {
+
+            # elimina numero
+            if ($Numero->delete(2, $DB) === false) {
+               $errores = true;
+               $message = 'Error: No se pudo eliminar Servicio De Emergencia - cod: 25';
+               goto result;
+            }
+
+            # libera numero real
+            if ($NumeroReal->ActualizaInterno($Numero->numero_real, '', '', $DB) === false) {
+               $errores = true;
+               $message = 'Error: No se pudo eliminar Servicio De Emergencia - cod: 26';
+               goto result;
+            }
+
+         }
+
+         # elimina boton
+         if ($Boton->delete($DB) === false) {
+            $errores = true;
+            $mensaje = 'Error: No se pudo eliminar el boton - cod: 27';
+            goto result;
+         }
+
+         $desc = 'SE ELIMINO SERVICO "Web RTC" A USUARIO | BUSUA_COD: ' . ($Usuario->busua_cod);
+         $Log->inserta($Operador->oper_cod, $desc, 'operator/json/json_deleteService.php', $DB);
+   
+         $mensaje = 'Servicio Web RTC <span class="text-primary">eliminado</span>';
+
+         break;
+
       default:
 
          $errorres = true;
-         $mensaje = 'Error: Servicio no encontrado - cod: 21';
+         $mensaje = 'Error: Servicio no encontrado - cod: 28';
          goto result;
 
          break;

@@ -349,7 +349,7 @@ const chekDeleteUserService = async (busua_cod, op) => {
 
          const res = await deleteUserService(busua_cod);
 
-         if (res.status === 'err') {
+         if (res.status === 'error') {
 
             await showToastError(res.message);
 
@@ -550,8 +550,9 @@ const updateLocalizacion = async (busua_cod, localizacion) => {
 }
 
 // actualiza la mac 
-const updateMac = async (busua_cod, mac) => {
+const updateMac = async (bot_cod, busua_cod, mac) => {
    const info = {
+      'bot_cod': bot_cod,
       'busua_cod': busua_cod,
       'mac': mac
    }
@@ -645,6 +646,9 @@ const confMenuPreServiceUP = (op, busua_cod) => {
                break;
             case 5:
                opservice = 4;
+               break;
+            case 6:
+               opservice = 2;
                break;
          }
 
@@ -748,6 +752,8 @@ const checkUpdateStatuService = async (val, val_i, busua_cod, id, tipo_cod) => {
 
    try {
 
+      await localStorageSave(`service-${id}`, val_i);
+
       let statusclass = '';
       let idstatus = '';
       let descstatus = '';
@@ -775,6 +781,12 @@ const checkUpdateStatuService = async (val, val_i, busua_cod, id, tipo_cod) => {
             descstatus = ('Servicio tracker ' + (val.checked === true ? `<b class='text-success'>Activo</b>` : `<b class='text-warning'>Inactivo</b>`));
             break;
 
+         case 6:
+
+            statusclass = `status-service-button-${id}`;
+            idstatus = `status-service-button-${id}`;
+            descstatus = ('Servicio bot&oacute;n ' + (val.checked === true ? `<b class='text-success'>Activo</b>` : `<b class='text-warning'>Inactivo</b>`));
+            break;
 
          default:
 
@@ -785,24 +797,23 @@ const checkUpdateStatuService = async (val, val_i, busua_cod, id, tipo_cod) => {
 
       }
 
-      await localStorageSave(`service-${busua_cod}`, val_i);
       const res = await updateStatuService(val, busua_cod, id, tipo_cod);
 
       if (res.status === 'err') {
 
-         val.checked = (JSON.parse(localStorage.getItem(`service-${busua_cod}`))) === 1 ? true : false;
+         val.checked = (JSON.parse(localStorage.getItem(`service-${id}`))) === 1 ? true : false;
          await showToastError(res.message);
 
       } else {
 
-         localStorage.removeItem(`service-${busua_cod}`);
-         localStorage.setItem(`service-${busua_cod}`, JSON.stringify(res.esta_cod));
+         localStorage.removeItem(`service-${id}`);
+         localStorage.setItem(`service-${id}`, JSON.stringify(res.esta_cod));
 
          switch (parseInt(tipo_cod)) {
 
             case 2:
 
-               document.getElementById(`localizacion-upd-button-${id}`).disabled = parseInt(res.esta_cod) === 1 ? false : true;
+               document.getElementById(`localizacion-udp-button-${id}`).disabled = parseInt(res.esta_cod) === 1 ? false : true;
                document.getElementById(`mac-udp-${id}`).disabled = parseInt(res.esta_cod) === 1 ? false : true;
 
                break;
@@ -873,7 +884,9 @@ const chekDeleteService = async (bot_cod, busua_cod, tipo_cod) => {
                case 5:
                   await formTracker(await dataServiceTracker(busua_cod), busua_cod);
                   break;
-
+               case 6:
+                  await formButton(await dataServiceButton(busua_cod), busua_cod);
+                  break;
             }
 
             await showToastSuccess(result.message);
@@ -944,7 +957,7 @@ const checkUpdateLocalizacion = async (val, val_i, busua_cod) => {
 }
 
 // check actualiza la mac 
-const checkUpdateMac = async (input, val_i, busua_cod) => {
+const checkUpdateMac = async (input, val_i, bot_cod, busua_cod) => {
 
    try {
 
@@ -961,7 +974,7 @@ const checkUpdateMac = async (input, val_i, busua_cod) => {
 
       if (question.isConfirmed) {
 
-         const res = await updateMac(busua_cod, input.value.trim());
+         const res = await updateMac(bot_cod, busua_cod, input.value.trim());
 
          if (res.status === 'err') {
 
@@ -1018,6 +1031,17 @@ const formButton = async (data, busua_cod) => {
                let info = '';
                let statusdesc = 'Servicio bot&oacute;n ' + (parseInt(element.esta_cod) === 1 ? `<b class='text-success'>Activo</b>` : `<b class='text-warning'>Inactivo</b>`);
 
+               // valida el tipo de servicio (dependiendo del tipo muestra campos localizacion, mac)
+               let view_campo = false;
+               switch (tipo_cod) {
+                  case 2:
+                     view_campo = true;
+                     break;
+                  default:
+                     view_campo = false;
+                     break;
+               }
+
                info = `
                <div class="row">
                   <div class="col-12 d-flex justify-content-between align-items-center">
@@ -1040,23 +1064,23 @@ const formButton = async (data, busua_cod) => {
                   </div>
                   <div class="col-lg-3 mb-3">
                      <label for="sip-username-user-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Sip Username:</label>
-                     <input type="text" class="form-control form-control-sm" id="sip-username-user-${element.bot_cod}" name="sip-username-user-${element.bot_cod}" title="Sip Username del servicio" value="${element.sip_username}" disabled>
+                     <input type="text" class="form-control form-control-sm" id="sip-username-user-${element.bot_cod}" name="sip-username-user-${element.bot_cod}" title="Sip Username del servicio bot&oacute;n" value="${element.sip_username}" disabled>
                   </div>
                   <div class="col-lg-3 mb-3">
                      <label for="sip-password-user-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Sip Password:</label>
-                     <input type="text" class="form-control form-control-sm" id="sip-password-user-${element.bot_cod}" name="sip-password-user-${element.bot_cod}" title="Sip Password del servicio" value="${element.sip_password}" disabled>
+                     <input type="text" class="form-control form-control-sm" id="sip-password-user-${element.bot_cod}" name="sip-password-user-${element.bot_cod}" title="Sip Password del servicio bot&oacute;n" value="${element.sip_password}" disabled>
                   </div>
                   <div class="col-lg-3 mb-3">
                      <label for="sip-display-name-user-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Sip Display Name:</label>
-                     <input type="text" class="form-control form-control-sm" id="sip-display-name-user-${element.bot_cod}" name="sip-display-name-user-${element.bot_cod}" title="Sip Display Name del servicio" value="${element.sip_display_name}" disabled>
+                     <input type="text" class="form-control form-control-sm" id="sip-display-name-user-${element.bot_cod}" name="sip-display-name-user-${element.bot_cod}" title="Sip Display Name del bot&oacute;n" value="${element.sip_display_name}" disabled>
                   </div>
-                  <div id="div-localizacion-upd-${element.bot_cod}" class="col-lg-3 mb-3 ${tipo_cod !== 1 ? '' : 'd-none'}">
-                     <label for="localizacion-upd-button-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Localizaci&oacute;n:</label>
-                     <input type="text" class="form-control form-control-sm" id="localizacion-upd-button-${element.bot_cod}" placeholder="Ingrese una localizaci&oacute;n" title="Localizaci&oacute;n del servicio bot&oacute;n" onchange="checkUpdateLocalizacion(this, '${localizacion}', '${element.bot_cod}')" value="${localizacion}" ${parseInt(element.esta_cod) === 1 ? '' : 'disabled'}>
+                  <div class="col-lg-3 mb-3 ${view_campo === true ? '' : 'd-none'}">
+                     <label for="localizacion-udp-button-${element.bot_cod}" class="form-label col-form-label-sm mb-1">Localizaci&oacute;n:</label>
+                     <input type="text" class="form-control form-control-sm status-service-button-${element.bot_cod}" id="localizacion-udp-button-${element.bot_cod}" placeholder="Ingrese una localizaci&oacute;n" title="Localizaci&oacute;n del del servicio del bot&oacute;n" onchange="checkUpdateLocalizacion(this, '${localizacion}', '${busua_cod}')" value="${localizacion}">
                   </div>
-                  <div id="div-mac-upd-${element.bot_cod}" class="col-lg-3 mb-3 ${tipo_cod !== 1 ? '' : 'd-none'}">
+                  <div class="col-lg-3 mb-3 ${view_campo === true ? '' : 'd-none'}">
                      <label for="mac-udp-${element.bot_cod}" class="form-label">Mac:</label>
-                     <input type="text" class="form-control" id="mac-udp-${element.bot_cod}" maxlength="12" placeholder="Ingrese una Mac" title="Mac del servicio bot&oacute;n" onchange="checkUpdateMac(this, '${mac}', '${element.bot_cod}')" value="${mac}" pattern="^([0-9A-Fa-f]){12}$" onkeyup="validateMac(event, ${element.bot_cod})" ${parseInt(element.esta_cod) === 1 ? '' : 'disabled'}>
+                     <input type="text" class="form-control status-service-button-${element.bot_cod}" id="mac-udp-${element.bot_cod}" maxlength="12" placeholder="Ingrese una Mac" title="Mac del servicio" onchange="checkUpdateMac(this, '${mac}', ${element.bot_cod}, ${busua_cod})" value="${mac}" pattern="^([0-9A-Fa-f]){12}$" onkeyup="validateMac(event, ${element.bot_cod})">
                      <div id="mac-udp-${element.bot_cod}-help" name="err-mac-udp-${element.bot_cod}" class="form-text" hidden></div>
                   </div>
                </div>
@@ -1359,11 +1383,9 @@ const formServiceAdd = async (data, busua_cod) => {
          `;
 
          data.services.forEach(element => {
-            if (parseInt(element[0]) !== 3) {
-               document.getElementById(`tipo-cod-service-up-${busua_cod}`).innerHTML += /* html */ `
-               <option value="${element[0]}">${element[1]}</option>
-               `;
-            }
+            document.getElementById(`tipo-cod-service-up-${busua_cod}`).innerHTML += /* html */ `
+            <option value="${element[0]}">${element[1]}</option>
+            `;
          });
 
          document.getElementById(`form-add-service-user-${busua_cod}`).addEventListener('submit', async e => {
@@ -1396,8 +1418,15 @@ const formServiceAdd = async (data, busua_cod) => {
                      case 5:
                         await formTracker(await dataServiceTracker(busua_cod), busua_cod);
                         break;
+                     case 6:
+                        await formButton(await dataServiceButton(busua_cod), busua_cod);
+                        break;
 
                   }
+
+                  document.getElementById(`tipo-cod-service-up-${busua_cod}`).value = 0;
+                  showParamsRequired(0, busua_cod);
+                  showToastSuccess(result.message);
 
                } else {
 
@@ -3631,7 +3660,7 @@ const selectTipoServiceNoti = async (select) => {
             check.disabled = false;
             btn.classList.remove('disabledp');
          }
-         
+
       }
 
    } catch (error) {
@@ -4687,7 +4716,7 @@ const validateService = (op, service, busua_cod = 0) => {
    }
 
    console.log(service);
-   
+
 
    switch (service) {
 
@@ -4915,6 +4944,24 @@ const configMenuService = (newservice, op) => {
             `;
          }
          break;
+      case 6:
+         config = `
+         <div class="d-flex align-items-center justify-content-between pt-2">
+            <span class="fw-semibold">Este servicio no necesita una configuraci&oacute;n adicional.</span>
+            <div class="row">
+               <div class="col-auto">
+                  <label class="form-label" for="notify-service-add-${newservice}">Notificar servicio:</label>
+               </div>
+               <div class="col-auto">
+                  <select class="form-select form-select-sm mb-3" id="notify-service-add-${newservice}" name="notify-service-add" title="Notifica servicio">
+                     <option value="0" selected>NO</option>
+                     <option value="1">SI</option>
+                  </select>
+               </div>
+            </div>
+         </div>
+         `;
+         break;
       default:
          config = `
          <div class="mb-3">
@@ -4966,7 +5013,7 @@ const confMenuPreService = (op) => {
             allservice.insertAdjacentHTML('beforeend', `
             <div class="accordion-item" name="accordion-services" data-value="${newservice.value}">
                <h2 class="accordion-header d-flex align-items-center">
-                  <img class="link-pointer" src="https://${document.domain}/img/icon-trash-delete.png" width="27" height="27" id="delete-service-${newservice.value}" name="delete-service-${newservice.value}" onclick="deletePreService(this)" title="Eliminar servicio">
+                  <img class="link-pointer" src="https://${document.domain}/img/icon-trash-delete.png" width="27" height="27" id="delete-button-service-${element.prod_cod}" name="delete-button-service-${element.prod_cod}" onclick="chekDeleteService(${element.prod_cod}, ${busua_cod}, 4)" title="Eliminar servicio">
                   <button class="accordion-button bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#panel-service-${newservice.value}" aria-expanded="true" aria-controls="panel-service-${newservice.value}">
                      ${newservice.querySelector(`option[value="${newservice.value}"]`).innerHTML}
                   </button>

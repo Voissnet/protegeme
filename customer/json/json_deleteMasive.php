@@ -29,7 +29,7 @@
       goto result;
    }
 
-   // datos
+   # datos
    $data    = json_decode(file_get_contents('php://input'), true);
    $users   = isset($data['users']) ? $data['users'] : false;
    
@@ -39,7 +39,7 @@
       goto result;
    }
 
-   // Clases
+   # Clases
    require_once 'BGateway.php';
    require_once 'BGatewayNumero.php';
    require_once 'BGLBLnumeroReal.php';
@@ -73,28 +73,28 @@
       
       $busua_cod = $users[$i];
 
-      // Busca al Usuario
+      # Busca al Usuario
       if ($Usuario->buscaUser($busua_cod, $DB) === false) {
          $errores = true;
          $message = 'Error: No se registra Usuario - cod: 02';
          goto result;
       }
 
-      // Busca al grupo
+      # Busca al grupo
       if ($Grupo->busca($Usuario->group_cod, $DB) === false) {
          $errores = true;
          $message = 'Error: No se registra grupo del Usuario - cod: 03';
          goto result;
       }
 
-      // Busca dominio segun el grupo
+      # Busca dominio segun el grupo
       if ($Dominio->busca($Grupo->dom_cod, $DB) === false) {
          $errores = true;
          $message = 'Error: No se registra dominio del Usuario - cod: 04';
          goto result;
       }
 
-      // Busca Adaptador SOS
+      # Busca Adaptador SOS
       if ($Gateway->buscaGatewaySOS($Dominio->gate_cod, $DB) === false) {
          $errores = true;
          $message = 'Error: No se registra Servicio De Emergencia - cod: 05';
@@ -109,24 +109,27 @@
 
          switch ($Boton->tipo_cod) {
             case '1':
-               $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username));
+               $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 1);
                break;
             case '2':
-               $sip_username = Parameters::generaSipUsernameFIJO($Boton->sip_username, strlen($Boton->sip_username));
+               $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 2);
+               break;
+            case '6':
+               $sip_username = Parameters::generaSipUsername($Boton->sip_username, strlen($Boton->sip_username), 3);
                break;
          }
 
-         // busca Numero SOS
+         # busca Numero SOS
          if ($GatewayNumero->buscaNumSOS('533' . $Gateway->gate_cod . $sip_username, $Gateway->gate_cod, $DB2) === true) {
             
-            // eliminamos numero interno
+            # eliminamos numero interno
             if ($GatewayNumero->delete(2, $DB2) === false) {
                $errores = true;
                $message = 'Error: No se pudo eliminar Servicio De Emergencia - cod: 06';
                goto result;
             }
 
-            // liberamos numero real
+            # liberamos numero real
             if ($NumeroReal->ActualizaInterno($GatewayNumero->numero_real, '', '', $DB2) === false) {
                $errores = true;
                $message = 'Error: No se pudo eliminar Servicio De Emergencia - cod: 07';
@@ -145,7 +148,7 @@
 
       }
 
-       // Consulta si el Usuario tenia servicio de tracker
+       # Consulta si el Usuario tenia servicio de tracker
        if ($Tracker->busca($Usuario->busua_cod, $DB) === true) {
 
          if ($Tracker->actualizaEstado(3, $DB) === false) {
@@ -162,7 +165,7 @@
          goto result;
       }
 
-      // elimina contatcos de emrgencia llamadas
+      # elimina contatcos de emrgencia llamadas
       $stat = $ContactoLlama->buscaContactos($Usuario->busua_cod, $DB);
    
       while ($stat) {
@@ -174,7 +177,7 @@
          $stat = $ContactoLlama->siguiente($DB);
       }
    
-      // elimina contactos de emergencia SMS
+      # elimina contactos de emergencia SMS
       $stat2 = $ContactoSMS->buscaContactosD($Usuario->busua_cod, $DB);
    
       while ($stat2) {
@@ -186,7 +189,7 @@
          $stat2 = $ContactoSMS->siguiente($DB);
       }
 
-      // elimina otros productos
+      # elimina otros productos
       $stat3 = $Otros->buscaProducto($Usuario->busua_cod, $DB);
 
       while ($stat3) {

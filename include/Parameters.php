@@ -254,7 +254,7 @@
          $curl = curl_init();
 
          curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://pbe.lanube.cl:8025/mail',
+            CURLOPT_URL => 'https://pbe.redvoiss.net:8025/mail',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

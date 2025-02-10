@@ -14,8 +14,9 @@
    }
 
    # establecer otros encabezados
-   header('Access-Control-Allow-Methods: POST');
+   header('Access-Control-Allow-Methods: GET');
    header('Access-Control-Allow-Headers: Content-Type');
+   header('Content-Type: application/json; charset=UTF-8');
 
    require_once 'Parameters.php';
 

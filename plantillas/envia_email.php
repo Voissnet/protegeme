@@ -16,11 +16,13 @@
    # establecer otros encabezados
    header('Access-Control-Allow-Methods: POST');
    header('Access-Control-Allow-Headers: Content-Type');
+   header('Content-Type: application/json; charset=UTF-8');
 
    require_once 'Parameters.php';
 
-   $error   = false;
-   $message = '';
+   $busua_cod  = null;
+   $error      = false;
+   $message    = '';
    $statusCode;
 
    $data = json_decode(file_get_contents('php://input'), true);
@@ -29,7 +31,7 @@
    if (json_last_error() !== JSON_ERROR_NONE) {
       $error      = true;
       $statusCode = 400;
-      $message    = 'Parámetro inválido (0)';
+      $message    = 'Parámetro invalido (0)';
       goto result;
    }
    

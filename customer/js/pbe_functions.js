@@ -6370,7 +6370,7 @@ const infoAlertsDiv = (data, month, monthdesc) => {
                   <tr>
                      <td>${element.alert_cod}</td>
                      <td>${element.tipo_alerta}</td>
-                     <td>${element.cloud_username}@${element.cloud_username}</td>
+                     <td>${element.cloud_username}@${element.dominio_usuario}</td>
                      <td class="text-center">${createAt.getDate()}-${(createAt.getMonth() + 1) < 10 ? `0${(createAt.getMonth() + 1)}` : (createAt.getMonth() + 1)}-${createAt.getFullYear()} ${element.fecha_creacion.substring(11, 19)}</td>
                      <td class="text-center">${attentionAtDesc}</td>
                      <td class="text-center">

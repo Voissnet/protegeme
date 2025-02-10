@@ -1,0 +1,143 @@
+/* Estilo base */
+/* Tamaño base estándar para pantallas medianas */
+.font-init {
+   font-size: 16px;
+}
+
+#div-container {
+   width: 50%;
+}
+
+.message {
+   font-size: 18px;
+}
+
+#title-cred {
+   font-size: 20px;
+   font-weight: 500;
+}
+
+footer {
+   bottom: auto !important;
+   position: relative !important;
+}
+
+/* Pantallas muy pequeñas (móviles en vertical, <= 320px) */
+@media (max-width: 320px) {
+   .font-init {
+      font-size: 12px;
+   }
+
+   .message {
+      font-size: 10px;
+   }
+
+   #title-cred {
+      font-size: 18px;
+   }
+
+   #div-container {
+      width: 100%;
+   }
+}
+
+/* Pantallas pequeñas (móviles, 321px - 480px) */
+@media (min-width: 321px) and (max-width: 480px) {
+   .font-init {
+      font-size: 14px;
+   }
+
+   .message {
+      font-size: 14px !important;
+   }
+
+   #title-cred {
+      font-size: 18px;
+   }
+
+   #div-container {
+      width: 100%;
+   }
+}
+
+/* Pantallas medianas (tabletas, 481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+   .font-init {
+      font-size: 15px;
+   }
+
+   .message {
+      font-size: 15px !important;
+   }
+
+   #title-cred {
+      font-size: 18px;
+   }
+
+   #div-container {
+      width: 90%;
+   }
+}
+
+/* Pantallas grandes (portátiles, 769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+   .font-init {
+      font-size: 16px;
+   }
+
+   .message {
+      font-size: 16px !important;
+   }
+
+   #title-cred {
+      font-size: 18px;
+   }
+
+   #div-container {
+      width: 50%;
+   }
+}
+
+/* Pantallas extra grandes (escritorios y monitores, > 1024px) */
+@media (min-width: 1025px) {
+   .font-init {
+      font-size: 17px;
+   }
+
+   #title-cred {
+      font-size: 20px;
+   }
+
+   #div-container {
+      width: 50%;
+   }
+}
+
+/* Personalizar el tamaño de la alerta */
+.swal2-popup {
+   width: 350px !important;
+   /* Establecer un ancho más pequeño */
+   font-size: 16px;
+   /* Reducir el tamaño de la fuente */
+   padding: 20px;
+   /* Reducir el padding */
+}
+
+/* Personalización de los botones de SweetAlert */
+.swal2-confirm {
+   background-color: #4caf50;
+   /* Verde elegante */
+   border-radius: 30px;
+   padding: 10px 20px;
+   font-size: 16px;
+   font-weight: bold;
+}
+
+.swal2-cancel {
+   background-color: #f44336;
+   /* Rojo elegante */
+   border-radius: 30px;
+   padding: 10px 20px;
+   font-size: 16px;
+   font-weight: bold;
+}

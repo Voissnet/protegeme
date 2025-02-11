@@ -233,11 +233,7 @@
                         <span class="sub-title-register">4. ACUERDO</span>
                      </div>
                      <div class="col-12 mb-2 d-none" name="op4">
-                        <textarea id="agreement" aria-describedby="agreement-account" title="Acuerdo Redvoiss" class="form-control form-control-sm" rows="10" readonly="readonly">
-                        <?
-                           require_once 'inc_acuerdo.php';
-                        ?>
-                        </textarea>
+                        <iframe id="condition-desc" src="https://pbe.lanube.cl/customer/register/condiciones.php" width="100%" style="border: none;"></iframe>
                      </div>
                      <div class="col-12 mb-2 d-none" name="op4">
                         <div class="form-check">

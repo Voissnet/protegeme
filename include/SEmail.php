@@ -48,24 +48,107 @@
          $nombre        = strtoupper($nombre);
          $apellidos     = strtoupper($apellidos);
          $mensaje       = <<< EOF
-                           <html>
-                              <head>
-                                 <title>Activación cuenta en sitio Redvoiss.net</title>
-                                 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-                              </head>
-                              <body>
-                                 <p>Bienvenido(a) $nombre $apellidos<br>
-                                    Para completar el proceso de inscripción y activar su cuenta por favor haga click en el siguiente enlace:<br><br>
-                                    <a href="$path/customer/register/form_activate.php?username=$username&sesion_check=$session_check">ACTIVAR CUENTA</a><br><br>
-                                    Recuerde nuestro teléfono de contacto $fono_redvoiss. Para consultas sobre abonos, marque la opción 1; para asistencia comercial, opción 2 y soporte técnico, opción 3.<br><br>
-                                    Este correo es generado de manera automática. Por favor, no lo responda.<br>
-                                    Para cualquier consulta, por favor comuníquese con soporte@redvoiss.net o llame al $fono_redvoiss
+                        <!DOCTYPE html>
+                        <html lang="es">
+                           <head>
+                              <meta charset="ISO-8859-1" />
+                              <meta name="viewport" content="width=device-width, initial-scale=1" />
+                              <title>Activación de cuenta - Protegeme</title>
+                              <style>
+                                 body {
+                                    font-family: Arial, sans-serif;
+                                    background-color: #f8f9fa;
+                                    color: #333;
+                                    margin: 0;
+                                    padding: 20px;
+                                 }
+                                 .container {
+                                    max-width: 600px;
+                                    background: #ffffff;
+                                    padding: 25px;
+                                    margin: auto;
+                                    border-radius: 8px;
+                                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                                    text-align: center;
+                                 }
+                                 h1 {
+                                    color: #dc3545;
+                                    font-size: 24px;
+                                    margin-bottom: 15px;
+                                 }
+                                 p {
+                                    font-size: 16px;
+                                    line-height: 1.5;
+                                    margin-bottom: 15px;
+                                 }
+                                 .button {
+                                    display: inline-block;
+                                    background: #dc3545;
+                                    color: #ffffff;
+                                    text-decoration: none;
+                                    font-size: 16px;
+                                    font-weight: bold;
+                                    padding: 14px 24px;
+                                    border-radius: 6px;
+                                    transition: background 0.3s ease;
+                                    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.5);
+                                 }
+                                 .button:hover {
+                                    background: #c82333;
+                                    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.7);
+                                 }
+                                 .contact {
+                                    font-size: 14px;
+                                    color: #555;
+                                    margin-top: 15px;
+                                 }
+                                 .footer {
+                                    font-size: 12px;
+                                    color: #777;
+                                    margin-top: 20px;
+                                 }
+                                 hr {
+                                    border: 0;
+                                    height: 1px;
+                                    background: #ddd;
+                                    margin: 20px 0;
+                                 }
+                              </style>
+                           </head>
+                           <body>
+                              <div class="container">
+                                 <h1>Bienvenido(a) $nombre $apellidos</h1>
+                                 <p>
+                                    Para completar el proceso de inscripción y activar su cuenta, haga clic en el siguiente botón:
                                  </p>
-                                 <p>En PROTEGEME, estamos comprometidos en crear redes de apoyo ante emergencias para tu comunidad.</p>
-                                 <p>Gracias por su preferencia. <br>
-                                 Somos REDVOISS, comunicaciones como servicio</p>
-                              </body>
-                           </html>
+
+                                 <a href="$path/customer/register/form_activate.php?username=$username&sesion_check=$session_check" class="button">ACTIVAR CUENTA</a>
+
+                                 <hr>
+
+                                 <p class="contact">
+                                    Si tiene dudas, comuníquese con nuestro teléfono de contacto: <strong>$fono_redvoiss</strong>.
+                                 </p>
+                                 <p class="contact">
+                                    Para consultas sobre abonos, marque la opción 1; para asistencia comercial, opción 2; y para soporte técnico, opción 3.
+                                 </p>
+
+                                 <hr>
+
+                                 <p class="footer">
+                                    Este correo es generado automáticamente. No lo responda.<br />
+                                    Para cualquier consulta, escríbanos a
+                                    <a href="mailto:soporte@redvoiss.net" style="color: #777; text-decoration: none; font-weight: bold;">soporte@redvoiss.net</a>
+                                    o llame a <strong>$fono_redvoiss</strong>.
+                                 </p>
+
+                                 <p>En <strong style="color: #dc3545;">PROTEGEME</strong>, estamos comprometidos en crear redes de apoyo ante emergencias para tu comunidad.</p>
+                                 <p>
+                                    Gracias por su preferencia. <br />Somos <strong style="color: #f1a309;">REDVOISS</strong>, comunicaciones como servicio.
+                                 </p>
+                              </div>
+                           </body>
+                        </html>
                         EOF;
          return SEmail::Envia($subject, $mensaje, $cabeceras, $to);
       }
@@ -79,38 +162,56 @@
 									'Content-type:application/html' . "\r\n";
 
          $mensaje       = <<< EOF
-                           <html>
-                              <head>
-                                 <title>Nuevo cliente inscrito en Protegeme</title>
-                                 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-                              </head>
-                              <body>
-                                 <section id="section-notify-user-rv">
-                                    <p>
-                                       Se ha inscrito un nuevo cliente en Protegeme con los siguientes datos:<br>
-                                       Usua_cod: $usua_cod<br>
-                                       Nombre usuario: {$data['username']}<br>
-                                       ---------- <br>
-                                       - Datos empresa <br>
-                                       Empresa: {$data['empresa']}<br>
-                                       Razón social: {$data['razon_social']}<br>
-                                       Rut Empresa: {$data['rut_empresa']}<br>
-                                       Tamaño: {$data['med_cod_desc']}<br>
-                                       Rubro: {$data['rub_cod_desc']}<br>
-                                       ---------- <br>
-                                       - Datos contactos <br>
-                                       Nombre de contacto: {$data['nombre']} {$data['apellidos']}<br>
-                                       Rut contacto: {$data['rut']}<br>
-                                       Cargo: {$data['cargo']}<br>
-                                       Teléfono celular: {$data['telefono_celular']}<br>
-                                       Teléfono fijo: {$data['telefono_fijo']}<br>
-                                       Correo electrónico: {$data['email']}<br>
-                                       <br>
-                                       Por favor revisar este proceso
+                        <html>
+                           <head>
+                              <title>Nuevo cliente inscrito en Protegeme</title>
+                              <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+                              <title>Notificación de Biometría</title>
+                           </head>
+                           <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; background-color: #f4f4f4; padding: 20px;">
+                              <section id="section-notify-user-rv">
+                                 
+                                 <div style="max-width: 600px; background: #fff; padding: 20px; padding-bottom: 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin: auto;">
+                              
+                                    <p style="font-size: 16px; margin-bottom: 10px;">Estimado equipo,</p>
+                                    <p style="font-size: 16px; margin-bottom: 10px;">
+                                       Se ha inscrito un nuevo cliente en <strong style="color: red;">Protegeme</strong> con los siguientes datos:
                                     </p>
-                                 </section>
-                              </body>
-                           </html>
+                                    
+                                    <div style="background: #e6e5e5; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                                       <p style="margin: 0;"><strong>Datos usuario.</strong></p>
+                                       <p style="margin: 5px 0;"><strong>Usua_cod:</strong> {$usua_cod}</p>
+                                       <p style="margin: 5px 0;"><strong>Username:</strong> {$data['username']}</p>
+                                    </div>
+
+                                    <div style="background: #e6e5e5; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                                       <p style="margin: 0;"><strong>Datos empresa.</strong></p>
+                                       <p style="margin: 5px 0;"><strong>Empresa:</strong> {$data['empresa']}</p>
+                                       <p style="margin: 5px 0;"><strong>Razón social:</strong> {$data['razon_social']}</p>
+                                       <p style="margin: 5px 0;"><strong>Rut empresa:</strong> {$data['rut_empresa']}</p>
+                                       <p style="margin: 5px 0;"><strong>Tamaño:</strong> {$data['med_cod_desc']}</p>
+                                       <p style="margin: 5px 0;"><strong>Rubro:</strong> {$data['rub_cod_desc']}</p>
+                                    </div>
+
+                                    <div style="background: #e6e5e5; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                                       <p style="margin: 0;"><strong> Datos contactos.</strong></p>
+                                       <p style="margin: 5px 0;"><strong>Nombre de contacto:</strong> {$data['nombre']} {$data['apellidos']}</p>
+                                       <p style="margin: 5px 0;"><strong>Rut contacto:</strong> {$data['rut']}</p>
+                                       <p style="margin: 5px 0;"><strong>Cargo:</strong> {$data['cargo']}</p>
+                                       <p style="margin: 5px 0;"><strong>Teléfono celular:</strong> {$data['telefono_celular']}</p>
+                                       <p style="margin: 5px 0;"><strong>Teléfono fijo:</strong> {$data['telefono_fijo']}</p>
+                                       <p style="margin: 5px 0;"><strong>Correo electrónico:</strong> {$data['email']}</p>
+                                    </div>
+
+                                    <p style="color: #777; font-size: 12px;">
+                                       Este es un mensaje generado automáticamente, por favor no responda a este correo.
+                                    </p>
+
+                                 </div>
+                              </section>
+
+                           </body>
+                        </html>
                         EOF;
 			return SEmail::Envia($subject, $mensaje, $cabeceras, 'sistemas@redvoiss.net', 'Sistemas RV');
 		}

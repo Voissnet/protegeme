@@ -143,14 +143,14 @@ $v = rand();
 
 <body>
    <section id="condition-client">
-      <div class="container">
+      <div class="container-lg">
          <div class="row logo">
             <div class="col-12 d-flex justify-content-center">
                <img src="<?= Parameters::WEB_PATH ?>/img/logo-protegeme.webp" width="150" height="120">
             </div>
          </div>
          <div class="row justify-content-center">
-            <div id="div-form-register" class="col-12 border w-75 py-3 mb-3">
+            <div id="div-form-register" class="col-12 border w-100 py-3 mb-3">
                <div title="header">
                   <p lang="es-ES" class="western" align="center" style="line-height: 115%; page-break-before: always">
                      <font size="2" style="font-size: 11pt"><b>CONTRATO DE PRESTACIÓN DE

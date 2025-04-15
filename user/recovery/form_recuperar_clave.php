@@ -54,7 +54,7 @@
                      <form id="form-solit-reset-pass" class="row needs-validation" novalidate>
                         <div class="col-12 mb-3">
                            <div class="form-floating">
-                              <input type="text" class="form-control form-control-sm" id="username-reset" name="username-reset" minlength="1" maxlength="80" aria-describedby="username-reset-client" placeholder="Ingresa nombre de Usuario" title="Nombre usuario" onkeydown="sinEspacios(event)" autocomplete="off">
+                              <input type="text" class="form-control form-control-sm" id="username-reset" name="username-reset" minlength="1" maxlength="80" aria-describedby="username-reset-client" placeholder="Ingresa nombre de Usuario" title="Nombre usuario" onkeydown="onlySpace(event)" autocomplete="off">
                               <label for="username-reset" class="col-form-label-sm">Nombre de usuario</label>
                               <div class="invalid-feedback">
                                  Ingresar usuario
@@ -63,7 +63,7 @@
                         </div>
                         <div class="col-12 mb-3">
                            <div class="form-floating">
-                              <input type="email" class="form-control form-control-sm" id="email-reset" name="email-reset" aria-describedby="email-reset-client" placeholder="Ingrese su correo electr&oacute;nico" title="Correo usuario" autocomplete="off" onkeydown="sinEspacios(event)" onkeyup="validateEmailUser(this.value, 'email-reset')">
+                              <input type="email" class="form-control form-control-sm" id="email-reset" name="email-reset" aria-describedby="email-reset-client" placeholder="Ingrese su correo electr&oacute;nico" title="Correo usuario" autocomplete="off" onkeydown="onlySpace(event)" onkeyup="validateEmailUser(this.value, 'email-reset')">
                               <label for="email-reset" class="col-form-label-sm">Correo electr&oacute;nico</label>
                               <div class="invalid-feedback">
                                  Formato incorrecto
@@ -76,8 +76,18 @@
                               Validar Captcha
                            </div>
                         </div>
+                        <div id="r-error" class="col-12 text-center mb-2 d-none">
+                           <span class="text-danger fs-5"></span>
+                           <br>
+                           <span class="text-danger fs-6"></span>
+                        </div>
                         <div class="col-12 mb-2">
-                           <input name="submit" type="submit" value="Obtener correo de recuperaci&oacute;n" class="btn btn-sm btn-danger w-100">
+                           <button type="submit" class="btn btn-sm btn-danger w-100" id="btn-recovery-user" name="btn-recovery-user"> 
+                              <div id="spinner-btn-recovery-user" class="spinner-border spinner-border-sm text-white" role="status" hidden>
+                                 <span class="visually-hidden">Loading...</span>
+                              </div>
+                              <span id="textbtn-btn-recovery-user">Obtener correo de recuperaci&oacute;n</span>
+                           </button>
                         </div>
                         <div class="col-12 mb-3">
                            <a href="<?= Parameters::WEB_PATH ?>/user/login/index.php" class="text-decoration-none btn-perso">Volver al inicio</a>
@@ -96,7 +106,7 @@
          <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/js/jquery-3.7.1.min.js"></script>
          <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
          <script defer src="https://cdn.jsdelivr.net/npm/ua-parser-js@0/dist/ua-parser.min.js"></script>
-         <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/customer/js/screens.js"></script>
+         <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/customer/js/screens.js?v=2"></script>
          <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/js/functions.js?v<?= $v ?>"></script>
          <script type="text/javascript">
             document.getElementById('form-solit-reset-pass').addEventListener('submit', async (e) => {
@@ -105,12 +115,31 @@
 
                try {
 
+                  const texterror = document.getElementById('r-error');
+                  texterror.classList.add('d-none');
+
+                  await spinnerOpenBtn('btn-recovery-user');
                   await validateSoliFormReset();
-                  await sendEmailResetPassword();
+                  const rta = await sendEmailResetPassword();
+                  
+                  grecaptcha.reset();
+
+                  if (!rta.status) {
+                     texterror.classList.remove('d-none');
+                     texterror.querySelectorAll('span')[0].innerHTML = rta.message;
+                     texterror.querySelectorAll('span')[1].innerHTML = `COD: ${rta.cod}`;
+                     return;
+                  }
+
+                  showToastSuccess(rta.message);
 
                } catch (error) {
 
-                  console.error(`Error: ${error}`);
+                  console.error('Error', error);
+
+               } finally {
+
+                  spinnerCloseBtn('btn-recovery-user', 'Obtener correo de recuperaci&oacute;n');
 
                }
 

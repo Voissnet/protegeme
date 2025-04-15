@@ -122,13 +122,13 @@
                      <form id="form-reset-pass" class="row needs-validation" novalidate>
                         <div class="col-12 mb-3">
                            <div class="form-floating">
-                              <input type="password" class="form-control" id="new-password" name="new-password" minlength="1" maxlength="255" aria-describedby="new-password" placeholder="Nueva contrase&ntilde;a" title="Nueva contrase&ntilde;a" autocomplete="off" onkeydown="sinEspacios(event)">
+                              <input type="password" class="form-control" id="new-password" name="new-password" minlength="1" maxlength="255" aria-describedby="new-password" placeholder="Nueva contrase&ntilde;a" title="Nueva contrase&ntilde;a" autocomplete="off" onkeydown="onlySpace(event)">
                               <label for="new-password" class="col-form-label-sm">Contrase&ntilde;a</label>
                            </div>
                         </div>
                         <div class="col-12 mb-3">
                            <div class="form-floating">
-                              <input type="password" class="form-control" id="new-password-v" name="new-password-v" minlength="1" maxlength="255" aria-describedby="new-password-v" placeholder="Verificar contrase&ntilde;a" title="Repita contrase&ntilde;a" autocomplete="off" onkeydown="sinEspacios(event)">
+                              <input type="password" class="form-control" id="new-password-v" name="new-password-v" minlength="1" maxlength="255" aria-describedby="new-password-v" placeholder="Verificar contrase&ntilde;a" title="Repita contrase&ntilde;a" autocomplete="off" onkeydown="onlySpace(event)">
                               <label for="new-password-v" class="col-form-label-sm">Verificar Contrase&ntilde;a</label>
                               <div class="invalid-feedback">
                                  Contrase&ntilde;as no coinciden
@@ -141,8 +141,18 @@
                               Validar Captcha
                            </div>
                         </div>
-                        <div class="col-12 mb-3">
-                           <input type="submit" class="btn btn-sm btn-danger w-100" id="btn-login-user" value="Cambiar contrase&ntilde;a">
+                        <div id="r-error" class="col-12 text-center mb-2 d-none">
+                           <span class="text-danger fs-5"></span>
+                           <br>
+                           <span class="text-danger fs-6"></span>
+                        </div>
+                        <div class="col-12 mb-2">
+                           <button type="submit" class="btn btn-sm btn-danger w-100" id="btn-recovery-user" name="btn-recovery-user"> 
+                              <div id="spinner-btn-recovery-user" class="spinner-border spinner-border-sm text-white" role="status" hidden>
+                                 <span class="visually-hidden">Loading...</span>
+                              </div>
+                              <span id="textbtn-btn-recovery-user">Cambiar contrase&ntilde;a</span>
+                           </button>
                         </div>
                         <input type="hidden" id="bu" value="<?= $bu ?>">
                      </form>
@@ -167,12 +177,33 @@
 
                try {
 
+                  const texterror = document.getElementById('r-error');
+                  texterror.classList.add('d-none');
+
+                  await spinnerOpenBtn('btn-recovery-user');
                   await validateFormReset();
-                  await updatePasswordUser();
+                  const rta = await updatePasswordUser();
+
+                  grecaptcha.reset();
+
+                  if (!rta.status) {
+                     texterror.classList.remove('d-none');
+                     texterror.querySelectorAll('span')[0].innerHTML = rta.message;
+                     texterror.querySelectorAll('span')[1].innerHTML = `COD: ${rta.cod}`;
+                     return;
+                  }
+
+                  alert(rta.message);
+
+                  window.location.href = `${document.location.origin}/user/login/index.php`;
 
                } catch (error) {
 
-                  console.log(`Error: ${error}`);
+                  console.error('Error:', error);
+
+               } finally {
+
+                  spinnerCloseBtn('btn-recovery-user', 'Cambiar contrase&ntilde;a');
 
                }
 

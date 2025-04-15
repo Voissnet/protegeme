@@ -78,7 +78,7 @@
       }
 
       # Confirmar la transacción antes de enviar correos
-      $DB->Rollback();
+      $DB->Commit();
 
       if (!SEmail::MailInscripcion(
          $data['username'],

@@ -147,18 +147,6 @@
          <script defer src="https://cdn.jsdelivr.net/npm/ua-parser-js@0/dist/ua-parser.min.js"></script>
          <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/customer/js/screens.js?v<?= $v ?>"></script>
          <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/user/js/user_functions.js?v<?= $v ?>"></script>
-         <script type="text/javascript">
-            const mainNav = document.getElementById('main-nav');
-
-            const mainMenu = document.getElementById('main-menu');
-
-            window.addEventListener('resize', () => {
-               if (mainNav.classList.contains('nav--show')) {
-                  mainNav.classList.remove('nav--show');
-                  mainMenu.classList.remove('main-menu--show');
-               }
-            });
-         </script>
       </body>
    </html>
    <?

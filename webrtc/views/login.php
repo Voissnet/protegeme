@@ -15,7 +15,7 @@ if (isset($_GET['error'])) {
       case 'invalid_session':
          $error_message = 'Tu sesión ha caducado o los datos de la sesión son inválidos. Por favor, inicia sesión nuevamente.';
          break;
-      case 'no_cookie':
+      case 'no_jwt':
          $error_message = 'No se pudo encontrar la sesión activa. Por favor, inicia sesión para continuar.';
          break;
       default:
@@ -39,12 +39,16 @@ if (isset($_GET['message_success'])) {
 
 <head>
 
-   <!-- Required meta  tags -->
+   <!-- Required meta tags -->
+   <meta http-equiv="Expires" content="0">
+   <meta http-equiv="Last-Modified" content="0">
+   <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
+
    <meta http-equiv="Pragma" content="no-cache">
    <meta charset="utf-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+   
    <!-- title -->
    <title>Aplicaci&oacute;n Web RTC</title>
    <meta name="title" content="Login Protegeme Web RTC">
@@ -124,11 +128,12 @@ if (isset($_GET['message_success'])) {
 
    </section>
 
-   <script>
+   <script type="text/javascript">
       const form = document.getElementById('loginForm');
       const message = document.getElementById('message');
 
       form.addEventListener('submit', async (e) => {
+         
          e.preventDefault(); // Evitar que se recargue la página
 
          // Obtener los datos del formulario
@@ -151,9 +156,14 @@ if (isset($_GET['message_success'])) {
             const result = await response.json(); // Leer la respuesta en JSON
 
             if (result.success) {
-               // Redirigir al área protegida si el login fue exitoso
+
+               localStorage.setItem('jwt', result.token);
+               
+               // Redirigir al area protegida si el login fue exitoso
                window.location.href = 'main.php';
+
             } else {
+
                // Mostrar mensaje de error
                Swal.fire({
                   icon: 'error',
@@ -170,9 +180,9 @@ if (isset($_GET['message_success'])) {
                      popup: 'animate__animated animate__fadeOutUp'
                   }
                });
+
             }
          } catch (error) {
-            console.log(error);
 
             // Mostrar mensaje de error
             Swal.fire({
@@ -189,7 +199,7 @@ if (isset($_GET['message_success'])) {
                   popup: 'animate__animated animate__fadeOutUp'
                }
             });
-            alert('');
+
          }
       });
    </script>

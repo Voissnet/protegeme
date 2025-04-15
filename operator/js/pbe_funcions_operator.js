@@ -4715,9 +4715,6 @@ const validateService = (op, service, busua_cod = 0) => {
       return false;
    }
 
-   console.log(service);
-
-
    switch (service) {
 
       case 2:
@@ -5013,7 +5010,7 @@ const confMenuPreService = (op) => {
             allservice.insertAdjacentHTML('beforeend', `
             <div class="accordion-item" name="accordion-services" data-value="${newservice.value}">
                <h2 class="accordion-header d-flex align-items-center">
-                  <img class="link-pointer" src="https://${document.domain}/img/icon-trash-delete.png" width="27" height="27" id="delete-button-service-${element.prod_cod}" name="delete-button-service-${element.prod_cod}" onclick="chekDeleteService(${element.prod_cod}, ${busua_cod}, 4)" title="Eliminar servicio">
+                  <img class="link-pointer" src="https://${document.domain}/img/icon-trash-delete.png" width="27" height="27" id="delete-service-${newservice.value}" name="delete-service-${newservice.value}" onclick="deletePreService(this)" title="Eliminar servicio">
                   <button class="accordion-button bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#panel-service-${newservice.value}" aria-expanded="true" aria-controls="panel-service-${newservice.value}">
                      ${newservice.querySelector(`option[value="${newservice.value}"]`).innerHTML}
                   </button>

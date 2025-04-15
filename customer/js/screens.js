@@ -16,9 +16,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 const mainNav = document.getElementById('main-nav');
 const mainMenu = document.getElementById('main-menu');
-window.addEventListener('resize', () => {
-   if (mainNav.classList.contains('nav--show')) {
-      mainNav.classList.remove('nav--show');
-      mainMenu.classList.remove('main-menu--show');
-   }
-});
+
+if (mainNav && mainMenu) {
+   window.addEventListener('resize', () => {
+      if (mainNav.classList.contains('nav--show')) {
+         mainNav.classList.remove('nav--show');
+         mainMenu.classList.remove('main-menu--show');
+      }
+   });
+}

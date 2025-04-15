@@ -1,7 +1,7 @@
 <?
    class Parameters
    {
-      const WEB_NAME                   = "pbe.redvoiss.net";                                                            /* nombre del sitio */
+      const WEB_NAME                   = "pbe.lanube.cl";                                                            /* nombre del sitio */
       const WEB_PATH                   = "https://" . self::WEB_NAME;                                                /* Path raiz del sitio */
       const PATH                       = "/var/www/" . self::WEB_NAME . "/htdocs";                                   /* Raiz del sitio en linux */
       const PATH_LOG                   = "/var/www/" . self::WEB_NAME . "/logs";                                     /* Path LOGS UNIX  sitio */

@@ -1,33 +1,70 @@
 <?
-   require_once 'MOD_Error.php';
    require_once 'Parameters.php';
+   require_once 'MOD_Error.php';
    require_once 'BConexion.php';
+   require_once 'MOD_ReCaptcha.php';
 
    $DB         = new BConexion();
+
    $message    = '';
+   $cod        = '';
    $error      = false;
 
-   if ($UsuarioRV->sec_session_start_ajax() === false) {
+   if (!isset($_POST)) {
       $DB->Logoff();
-      MOD_Error::ErrorJSON('PBE_129');
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_101',
+         'message'   => MOD_Error::ErrorCode('PBE_101')
+      );
+      echo json_encode($data);
       exit;
    }
 
-   if ($UsuarioRV->VerificaLogin($DB) === false) {
+   # captcha
+   $captcha = $_GET['recaptcha'];
+
+   if (MOD_ReCaptcha::Valida($captcha) === false) {
       $DB->Logoff();
-      MOD_Error::ErrorJSON('PBE_130');
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_102',
+         'message'   => MOD_Error::ErrorCode('PBE_102')
+      );
+      echo json_encode($data);
       exit;
    }
-   
-   $data       = json_decode(file_get_contents('php://input'), true);
-   $user       = isset($data['username-reset']) ? $data['username-reset'] : false;
-   $email      = isset($data['email-reset']) ? $data['email-reset'] : false;
 
-   if ($user === false || $email === false) {
-      $message = MOD_Error::ErrorCode('PBE_124');
-      $error = true;
-      goto result;
+   # parametros
+   $dom     = isset($_POST['username']) ? $_POST['username'] : false;
+   $email   = isset($_POST['email']) ? $_POST['email'] : false;
+
+   if ($dom === false || $email === false) {
+      $DB->Logoff();
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_116',
+         'message'   => MOD_Error::ErrorCode('PBE_116')
+      );
+      echo json_encode($data);
+      exit();
    }
+
+   # valida que dom contenga la '@'
+   if (strpos($dom, '@') === false) {
+      $DB->Logoff();
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_118',
+         'message'   => MOD_Error::ErrorCode('PBE_118')
+      );
+      echo json_encode($data);
+      exit;
+   }
+
+   $info             = explode('@', $dom);
+   $username         = $info[0];
+   $dominio_usuario  = $info[1];
 
    require_once 'BDominio.php';
    require_once 'BGrupo.php';
@@ -38,67 +75,84 @@
    $Grupo      = new BGrupo();
    $Usuario    = new BUsuario();
 
-   $data             = explode('@', $user);
-   $cloud_username   = $data[0];
-   $dominio_usuario  = $data[1];
-
-   // busca dominio usuario
+   # verifica que exista dominio
    if ($Dominio->verificaDominioUsuario($dominio_usuario, $DB) === false) {
-      $message = MOD_Error::ErrorCode('PBE_117');
-      $error = true;
-      goto result;
+      $DB->Logoff();
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_132',
+         'message'   => MOD_Error::ErrorCode('PBE_132')
+      );
+      echo json_encode($data);
+      exit;
    }
 
-   // dominio debe estar activo
-   if ($Dominio->esta_cod !== '1') {
-      $message = MOD_Error::ErrorCode('PBE_117');
-      $error = true;
-      goto result;
+   # dominio debe estar activo
+   if (intval($Dominio->esta_cod) !== 1) {
+      $DB->Logoff();
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_133',
+         'message'   => MOD_Error::ErrorCode('PBE_133')
+      );
+      echo json_encode($data);
+      exit;
    }
 
-   // buscamos email
-   if ($Usuario->buscaCloudEmail($cloud_username, $email, $DB) == false) {
-      $message = MOD_Error::ErrorCode('PBE_126');
-      $error = true;
-      goto result;
+   # busca usuario con su usuario y email
+   if ($Usuario->buscaCloudEmail($username, $email, $DB) === false) {
+      $DB->Logoff();
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_126',
+         'message'   => MOD_Error::ErrorCode('PBE_126')
+      );
+      echo json_encode($data);
+      exit;
    }
 
-   // busca grupo
+   # busca contact center asociado
    if ($Grupo->busca($Usuario->group_cod, $DB) === false) {
-      $message = MOD_Error::ErrorCode('PBE_126');
-      $error = true;
-      goto result;
-   }
-
-   // grupo debe estar activo
-   if ($Grupo->esta_cod !== '1') {
-      $message = MOD_Error::ErrorCode('PBE_117');
-      $error = true;
-      goto result;
-   }
-
-   // dominio deben ser iguales
-   if ($Dominio->dom_cod !== $Grupo->dom_cod) {
-      $message= MOD_Error::ErrorCode('PBE_126');
-      $error = true;
-      goto result;
-   }
-
-result:
-   if ($error === true) {
-
-      $data = array( 'status'    => 'error',
-                     'message'   => $message );
+      $DB->Logoff();
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_126',
+         'message'   => MOD_Error::ErrorCode('PBE_126')
+      );
       echo json_encode($data);
+      exit;
+   }
 
-   } else {
-
-      SEmail::resetPasswordUser($Usuario->nombre, $user, $email, $Usuario->busua_cod, $cloud_username, $dominio_usuario);
-      $data = array( 'status'    => 'success',
-                     'message'   => 'Correo enviado, revisar su bandeja' );
+   # contact debe estar activo
+   if (intval($Grupo->esta_cod) !== 1) {
+      $DB->Logoff();
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_117',
+         'message'   => MOD_Error::ErrorCode('PBE_117')
+      );
       echo json_encode($data);
+      exit;
+   }
 
+   # dominios deben ser iguales
+   if (intval($Dominio->dom_cod) !== intval($Grupo->dom_cod)) {
+      $DB->Logoff();
+      $data = array( 
+         'status'    => false,
+         'cod'       => 'PBE_126',
+         'message'   => MOD_Error::ErrorCode('PBE_126')
+      );
+      echo json_encode($data);
+      exit;
    }
 
    $DB->Logoff();
+
+   SEmail::resetPasswordUser($Usuario->nombre, $dom, $email, $Usuario->busua_cod, $username, $dominio_usuario);
+
+   $data = array( 'status'    => true,
+                  'message'   => 'Correo enviado. Por favor, revise su bandeja de entrada.' );
+   echo json_encode($data);
+
 ?>

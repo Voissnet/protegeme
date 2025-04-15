@@ -6,6 +6,9 @@
       var $esta_cod;
       var $nombre;
       var $escucha;
+      var $estado_llamada;
+      var $estado_sms;
+      var $estado_escucha;
 
       // trae informacion desde el primer registro
       function primero($busua_cod, &$DB)
@@ -186,6 +189,32 @@
          return $retval;
       }
 
+      // crea un nuevo registro
+      function insertContact($busua_cod, $numero, $nombre, $esta_cod, $escucha, &$DB)
+      {
+         $retval                 = false;
+         
+         $valores['busua_cod']   = $busua_cod;
+         $valores['numero']      = $numero;
+         $valores['nombre']      = $nombre;
+         $valores['esta_cod']    = $esta_cod;
+         $valores['escucha']     = $escucha;
+
+         $sql                    = "INSERT INTO BP.BP_CONTACTOS_LLAMADA (busua_cod, numero, nombre, esta_cod, escucha)
+                                    VALUES (:busua_cod, :numero, :nombre, :esta_cod, :escucha)";
+
+         if ($DB->Execute($sql, $valores))
+         {
+            $this->busua_cod     = $busua_cod;
+            $this->numero        = $numero;
+            $this->nombre        = $nombre;
+            $this->esta_cod      = $esta_cod;
+            $this->escucha       = $escucha;
+            $retval              = true;
+         }
+         return $retval;
+      }
+
       // actualiza un registro
       function actualiza($busua_cod, $numero, $esta_cod, &$DB)
       {
@@ -324,6 +353,129 @@
          if($DB->Query($sql, $valores))
          {
             $retval              = $DB->Value("ESCUCHA");
+         }
+         $DB->Close();
+         return $retval;
+      }
+
+      // busca todos los contactos haciendo macth
+      function contactosAll($busua_cod, &$DB)
+      {
+         $retval                 = false;
+
+         $valores['busua_cod']   = $busua_cod;
+
+         $sql                    = "SELECT numero,
+                                          MAX(nombre) AS nombre, -- Toma el nombre de la tabla de llamadas si existe
+                                          MAX(estado_llamada) AS estado_llamada,
+                                          MAX(estado_sms) AS estado_sms,
+                                          MAX(estado_escucha) AS estado_escucha
+                                    FROM (
+                                       -- Datos de la tabla de llamadas (estado_sms siempre sera NULL)
+                                       SELECT a.numero,
+                                             a.nombre,
+                                             a.esta_cod AS estado_llamada,
+                                             NULL AS estado_sms,
+                                             a.escucha AS estado_escucha
+                                       FROM BP.BP_CONTACTOS_LLAMADA a
+                                       WHERE a.busua_cod = :busua_cod
+                                       AND a.esta_cod IN (1, 2)
+
+                                       UNION ALL
+
+                                       -- Datos de la tabla de SMS (nombre y estado_llamada siempre seran NULL)
+                                       SELECT b.numero,
+                                             NULL AS nombre, -- No existe en esta tabla
+                                             NULL AS estado_llamada,
+                                             b.esta_cod AS estado_sms,
+                                             NULL AS estado_escucha
+                                       FROM BP.BP_CONTACTOS_SMS b
+                                       WHERE b.busua_cod = :busua_cod
+                                       AND b.esta_cod IN (1, 2)
+                                    ) datos
+                                    GROUP BY numero";
+
+         if ($DB->Query($sql, $valores))
+         {
+            $this->numero           = $DB->Value("NUMERO");
+            $this->nombre           = $DB->Value("NOMBRE");
+            $this->estado_llamada   = $DB->Value("ESTADO_LLAMADA");
+            $this->estado_sms       = $DB->Value("ESTADO_SMS");
+            $this->estado_escucha   = $DB->Value("ESTADO_ESCUCHA");
+            $retval                 = true;
+         } else {
+            $DB->Close();
+         }
+         return $retval;
+      }
+
+      // siguientes ocntactos match
+      function siguienteContactoAll(&$DB)
+      {
+         $retval                    = false;
+
+         if ($DB->Next())
+         {
+            $this->numero           = $DB->Value("NUMERO");
+            $this->nombre           = $DB->Value("NOMBRE");
+            $this->estado_llamada   = $DB->Value("ESTADO_LLAMADA");
+            $this->estado_sms       = $DB->Value("ESTADO_SMS");
+            $this->estado_escucha   = $DB->Value("ESTADO_ESCUCHA");
+            $retval                 = true;
+         } else {
+            $DB->Close();
+         }
+         return $retval;
+      }
+
+      // busca todos los contactos haciendo macth
+      function buscaContacto($busua_cod, $numero, &$DB)
+      {
+         $retval                 = false;
+
+         $valores['busua_cod']   = $busua_cod;
+         $valores['numero']      = $numero;
+
+         $sql                    = "SELECT numero,
+                                          MAX(nombre) AS nombre, -- Toma el nombre de la tabla de llamadas si existe
+                                          MAX(estado_llamada) AS estado_llamada,
+                                          MAX(estado_sms) AS estado_sms,
+                                          MAX(estado_escucha) AS estado_escucha
+                                    FROM (
+                                       -- Datos de la tabla de llamadas (estado_sms siempre sera NULL)
+                                       SELECT a.numero,
+                                             a.nombre,
+                                             a.esta_cod AS estado_llamada,
+                                             NULL AS estado_sms,
+                                             a.escucha AS estado_escucha
+                                       FROM BP.BP_CONTACTOS_LLAMADA a
+                                       WHERE a.busua_cod = :busua_cod
+                                       AND a.esta_cod IN (1, 2)
+                                       AND a.numero = :numero
+
+                                       UNION ALL
+
+                                       -- Datos de la tabla de SMS (nombre y estado_llamada siempre seran NULL)
+                                       SELECT b.numero,
+                                             NULL AS nombre, -- No existe en esta tabla
+                                             NULL AS estado_llamada,
+                                             b.esta_cod AS estado_sms,
+                                             NULL AS estado_escucha
+                                       FROM BP.BP_CONTACTOS_SMS b
+                                       WHERE b.busua_cod = :busua_cod
+                                       AND b.esta_cod IN (1, 2)
+                                       AND b.numero = :numero
+                                    ) datos
+                                    GROUP BY numero";
+
+         if ($DB->Query($sql, $valores))
+         {
+            $this->numero           = $DB->Value("NUMERO");
+            $this->nombre           = $DB->Value("NOMBRE");
+            $this->estado_llamada   = $DB->Value("ESTADO_LLAMADA");
+            $this->estado_sms       = $DB->Value("ESTADO_SMS");
+            $this->estado_escucha   = $DB->Value("ESTADO_ESCUCHA");
+            $retval                 = true;
          }
          $DB->Close();
          return $retval;

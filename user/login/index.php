@@ -46,7 +46,7 @@
                      <form id="form-login-user" class="row" name="form" method="POST" action="<?= Parameters::WEB_PATH ?>/user/login/checklogin.php" onsubmit="return validateFormLogin()">
                         <div class="col-12 mb-3">
                            <div class="form-floating">
-                              <input type="text" class="form-control" id="username" name="username" minlength="1" maxlength="80" aria-describedby="username-client" placeholder="Ingresa nombre de Usuario" title="Nombre usuario" autocomplete="off" onkeydown="sinEspacios(event)">
+                              <input type="text" class="form-control" id="username" name="username" minlength="1" maxlength="80" aria-describedby="username-client" placeholder="Ingresa nombre de Usuario" title="Nombre usuario" autocomplete="off" onkeydown="onlySpace(event)">
                               <label for="username" class="col-form-label-sm">Nombre de usuario</label>
                               <div class="invalid-feedback">
                                  Ingresar usuario
@@ -55,7 +55,7 @@
                         </div>
                         <div class="col-12 mb-3">
                            <div class="form-floating">
-                              <input type="password" class="form-control" id="password" name="password" minlength="1" maxlength="255" aria-describedby="password-client" placeholder="Ingrese su contrase&ntilde;a" title="Contrase&ntilde;a usuario" autocomplete="off" onkeydown="sinEspacios(event)">
+                              <input type="password" class="form-control" id="password" name="password" minlength="1" maxlength="255" aria-describedby="password-client" placeholder="Ingrese su contrase&ntilde;a" title="Contrase&ntilde;a usuario" autocomplete="off" onkeydown="onlySpace(event)">
                               <label for="password" class="col-form-label-sm">Contrase&ntilde;a</label>
                               <div class="invalid-feedback">
                                  Ingresar contrase&ntilde;a

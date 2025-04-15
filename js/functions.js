@@ -473,36 +473,44 @@ const onlyNumbers = (e, bu) => {
 
 // funcion para procesar un spinner en los botones
 const spinnerOpenBtn = async (id, text = 'Procesando') => {
-   try {
-      return new Promise((resolve, reject) => {
-         setTimeout(() => {
-            let spinner = document.getElementById(id);
-            spinner.disabled = true;
-            spinner.querySelector('div').hidden = false;
-            spinner.querySelectorAll('span')[1].innerHTML = text;
-            resolve(true);
-         }, 300);
-      });
-   } catch (error) {
-      console.error(`Error: ${error}`);
-   }
+
+   return new Promise((resolve, reject) => {
+
+      setTimeout(() => {
+
+         const spinner = document.getElementById(id);
+
+         spinner.disabled = true;
+         spinner.querySelector('div').hidden = false;
+         spinner.querySelectorAll('span')[1].innerHTML = text;
+
+         resolve(true);
+
+      }, 300);
+
+   });
+
 }
 
 // funcion para finalizar un spinner en los botones
 const spinnerCloseBtn = async (id, text) => {
-   try {
-      return new Promise((resolve, reject) => {
-         setTimeout(() => {
-            let spinner = document.getElementById(id);
-            spinner.disabled = false;
-            spinner.querySelector('div').hidden = true;
-            spinner.querySelectorAll('span')[1].innerHTML = text;
-            resolve(true);
-         }, 300);
-      });
-   } catch (error) {
-      console.error(`Error: ${error}`);
-   }
+
+   return new Promise((resolve, reject) => {
+
+      setTimeout(() => {
+
+         const spinner = document.getElementById(id);
+
+         spinner.disabled = false;
+         spinner.querySelector('div').hidden = true;
+         spinner.querySelectorAll('span')[1].innerHTML = text;
+
+         resolve(true);
+
+      }, 300);
+
+   });
+
 }
 
 // funcion para procesar un spinner en los botones personalizados
@@ -1414,57 +1422,74 @@ const largePhone = (e, count) => {
    }
 }
 
-// validacion form reset password
+// valida formulario
 const validateSoliFormReset = () => {
-   try {
-      return new Promise((resolve, reject) => {
-         setTimeout(() => {
-            let username = document.getElementById('username-reset');
-            let email = document.getElementById('email-reset');
-            let responseCap = grecaptcha.getResponse();
-            let statusemail = parseInt(document.getElementById('status-email').value);
-            let statuscaptcha = document.getElementById('cap-reset');
-            let error = false;
-            if (username.value.length === 0) {
-               username.classList.remove('is-valid');
-               username.classList.add('is-invalid');
-               username.focus();
-               error = true;
-            } else {
-               username.classList.remove('is-valid');
-               username.classList.remove('is-invalid');
-            }
-            if (statusemail === 1) {
-               email.classList.remove('is-valid');
-               email.classList.add('is-invalid');
-               email.focus();
-               error = true;
-            } else {
-               email.classList.remove('is-invalid');
-               email.classList.add('is-valid');
-            }
-            if (responseCap.length == 0) {
-               statuscaptcha.classList.remove('is-valid');
-               statuscaptcha.classList.add('is-invalid');
-               error = true;
-            } else {
-               statuscaptcha.classList.remove('is-invalid');
-               statuscaptcha.classList.add('is-valid');
-            }
-            if (error === true) {
-               reject(false);
-               return false;
-            }
-            resolve(true);
-         }, 300);
-      });
-   } catch (error) {
-      toast.fire({
-         icon: 'error',
-         title: error_system
-      });
-      console.error(`Error: ${error}`);
-   }
+
+   return new Promise((resolve, reject) => {
+
+      setTimeout(() => {
+
+         const username = document.getElementById('username-reset');
+         const email = document.getElementById('email-reset');
+
+         const responseCap = grecaptcha.getResponse();
+         const statusemail = parseInt(document.getElementById('status-email').value);
+         const statuscaptcha = document.getElementById('cap-reset');
+
+         let error = false;
+
+         if (username.value.length === 0) {
+
+            username.classList.remove('is-valid');
+            username.classList.add('is-invalid');
+            username.focus();
+            error = true;
+
+         } else {
+
+            username.classList.remove('is-valid');
+            username.classList.remove('is-invalid');
+
+         }
+
+         if (statusemail === 1) {
+
+            email.classList.remove('is-valid');
+            email.classList.add('is-invalid');
+            email.focus();
+            error = true;
+
+         } else {
+
+            email.classList.remove('is-invalid');
+            email.classList.add('is-valid');
+
+         }
+
+         if (responseCap.length == 0) {
+
+            statuscaptcha.classList.remove('is-valid');
+            statuscaptcha.classList.add('is-invalid');
+            error = true;
+
+         } else {
+
+            statuscaptcha.classList.remove('is-invalid');
+            statuscaptcha.classList.add('is-valid');
+
+         }
+
+         if (error === true) {
+            reject(false);
+            return false;
+         }
+
+         resolve(true);
+
+      }, 300);
+
+   });
+
 }
 
 // resetea password user RV
@@ -1505,162 +1530,97 @@ const resetPasswordOper = async (data) => {
 
 
 // envia email
-const sendEmailResetPassword = () => {
-   try {
-      return new Promise((resolve, reject) => {
-         setTimeout(() => {
-            const data = {
-               'username-reset': document.getElementById('username-reset').value,
-               'email-reset': document.getElementById('email-reset').value
-            }
-            fetch(`${url}/json/json_send_email_user.php`, {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json'
-               },
-               body: JSON.stringify(data)
-            })
-               .then(response => response.json())
-               .then((response) => {
-                  if (response.status === 'error') {
-                     toast.fire({
-                        icon: 'error',
-                        title: response.message
-                     });
-                     reject(false);
-                  } else {
-                     let email = document.getElementById('email-reset');
-                     document.getElementById('username-reset').value = '';
-                     document.getElementById('status-email').value = 1;
-                     email.value = '';
-                     email.classList.remove('is-valid');
-                     email.classList.remove('is-invalid');
-                     toast.fire({
-                        icon: 'success',
-                        title: response.message
-                     });
-                     resolve(true);
-                  }
-               })
-               .catch((error) => {
-                  toast.fire({
-                     icon: 'error',
-                     title: error_system
-                  });
-                  console.error(`Error: ${error}`);
-                  reject(`Error: ${error}`);
-               });
-         }, 300);
-      });
-   } catch (error) {
-      toast.fire({
-         icon: 'error',
-         title: error_system
-      });
-      reject(`Error: ${error}`);
-      console.error(`Error: ${error}`);
-   }
+const sendEmailResetPassword = async () => {
+   const params = new FormData();
+   params.append('username', document.getElementById('username-reset').value);
+   params.append('email', document.getElementById('email-reset').value);
+   const data = await fetch(`${url}/json/json_send_email_user.php?recaptcha=${grecaptcha.getResponse()}`, {
+      method: 'POST',
+      body: params
+   });
+   return await data.json();
 }
 
 // valida password
-const validateFormReset = () => {
-   try {
-      return new Promise((resolve, reject) => {
-         setTimeout(() => {
-            let error = false;
-            let statuscaptcha = document.getElementById('cap-reset');
-            let password = document.getElementById(`new-password`);
-            let password_v = document.getElementById(`new-password-v`);
-            let responseCap = grecaptcha.getResponse();
-            if (password.value.trim().length === 0 || password_v.value.trim().length === 0) {
-               toast.fire({
-                  icon: 'error',
-                  title: 'Debe ingresar contrase&ntilde;as'
-               });
-               error = true;
-               reject(error);
-               return false;
-            }
-            if (password.value.trim() !== password_v.value.trim()) {
-               password_v.classList.remove('is-valid');
-               password_v.classList.add('is-invalid');
-               error = true;
-            } else {
-               password_v.classList.remove('is-invalid');
-               password_v.classList.remove('is-valid');
-            }
+const validateFormReset = async () => {
 
-            if (responseCap.length == 0) {
-               statuscaptcha.classList.remove('is-valid');
-               statuscaptcha.classList.add('is-invalid');
-               error = true;
-            } else {
-               statuscaptcha.classList.remove('is-invalid');
-               statuscaptcha.classList.add('is-valid');
-            }
+   return new Promise((resolve, reject) => {
 
-            if (error === true) {
-               reject(false);
-               return false;
-            }
-            resolve(true);
-         }, 300);
+      let error = false;
 
-      });
+      const statuscaptcha = document.getElementById('cap-reset');
+      const password = document.getElementById('new-password');
+      const password_v = document.getElementById('new-password-v');
+      const responseCap = grecaptcha.getResponse();
 
-   } catch (error) {
-      console.error(`Error: ${error}`);
-   }
-}
+      // Verificar si los elementos existen
+      if (!password || !password_v || !statuscaptcha) {
+         showToastError('Elementos del formulario no encontrados.');
+         reject('Elementos del formulario no encontrados.');
+         return;
+      }
+
+      // Validar que ambos campos tengan contenido
+      if (password.value.trim().length === 0 || password_v.value.trim().length === 0) {
+         showToastError('Debe ingresar ambas contraseñas.');
+         reject('Debe ingresar ambas contraseñas.');
+         return;
+      }
+
+      // Validar que las contraseñas coincidan
+      if (password.value.trim() !== password_v.value.trim()) {
+
+         password_v.classList.remove('is-valid');
+         password_v.classList.add('is-invalid');
+         error = true;
+
+      } else {
+
+         password_v.classList.remove('is-invalid');
+         password_v.classList.add('is-valid');
+
+      }
+
+      // Validar el captcha
+      if (responseCap.length === 0) {
+
+         statuscaptcha.classList.remove('is-valid');
+         statuscaptcha.classList.add('is-invalid');
+         error = true;
+
+      } else {
+
+         statuscaptcha.classList.remove('is-invalid');
+         statuscaptcha.classList.add('is-valid');
+
+      }
+
+      // Si hubo algún error, rechazar la promesa
+      if (error) {
+
+         reject('Error en la validación de los datos.');
+         return;
+
+      }
+
+      // Si todo está correcto, resolver la promesa
+      resolve(true);
+
+   });
+
+};
 
 // update password user
-const updatePasswordUser = () => {
-   try {
-      return new Promise((resolve, reject) => {
-         setTimeout(() => {
-            const data = {
-               'new_password': document.getElementById('new-password').value,
-               'new_password_v': document.getElementById('new-password-v').value,
-               'bu': document.getElementById('bu').value
-            }
-            fetch(`${url}/json/json_update_password_user.php`, {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json'
-               },
-               body: JSON.stringify(data)
-            })
-               .then(response => response.json())
-               .then((response) => {
-                  if (response.status === 'error') {
-                     toast.fire({
-                        icon: 'error',
-                        title: response.message
-                     });
-                     reject(false);
-                  } else {
-                     toast.fire({
-                        icon: 'success',
-                        title: response.message
-                     });
-                     setTimeout(() => {
-                        window.location.href = `${urluser}/login/index.php`;
-                     }, 3000)
-                     resolve(true);
-                  }
-               }).catch((error) => {
-                  toast.fire({
-                     icon: 'error',
-                     title: error_system
-                  });
-                  console.error(`Error: ${error}`);
-                  reject(`Error: ${error}`);
-               });
-         }, 300);
-      });
-   } catch (error) {
-      console.error(`Error: ${error}`);
-   }
+const updatePasswordUser = async () => {
+   const params = new FormData();
+   params.append('new_password', document.getElementById('new-password').value);
+   params.append('new_password_v', document.getElementById('new-password-v').value);
+   params.append('busua_cod', document.getElementById('bu').value);
+   const data = await fetch(`${url}/json/json_update_password_user.php?recaptcha=${grecaptcha.getResponse()}`, {
+      method: 'POST',
+      body: params
+   });
+   return await data.json();
 }
 
 // valida formulario para recuperar contraseña adm

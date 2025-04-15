@@ -19,6 +19,7 @@
       var $grupo;
       var $gate_cod;
       var $contacto;
+      var $numeros;
 
       // trae el primer registro
       function primero(&$DB)
@@ -101,7 +102,8 @@
                   a.email,
                   a.nombre,
                   b.group_cod,
-                  c.contacto
+                  c.contacto,
+                  b.numeros
                   FROM BP.BP_USUARIO a,
                      BP.BP_GRUPO b,
                      BP.BP_DOMINIO c
@@ -130,7 +132,8 @@
                $this->nombre           = $DB->Value("NOMBRE");
                $this->group_cod        = $DB->Value("GROUP_COD");
                $this->contacto         = $DB->Value("CONTACTO");
-               $retval = true;
+               $this->numeros          = $DB->Value("NUMEROS");
+               $retval                 = true;
             }
          }
          $DB->Close();

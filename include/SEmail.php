@@ -380,21 +380,40 @@
          $url           = Parameters::WEB_PATH . '/user/recovery/form_cambiar_clave.php?token=' . $token . '&bu=' . $bu . '&cu=' . $cu . '&du=' . $du;
 
          $mensaje       = <<< EOF
-									<section id="section-reset-passwod" style="background-color: #dbdbdb;">
-										<div style="margin: 0 auto; width: 600px; background-color: #ffffff; padding: 16px;">
-											<p>Estimado/a $names,</p>
-											<br>
-											<p>Haz solicitado recuperar contraseña de tu cuenta <strong>PROTEGEME</strong> para tu usuario $user</p>
-											<br>
-											<p>A continuación, presiona <a href="$url">aquí</a> para crear su nueva contraseña.</p><p><strong>Recuerde que al cambiar la contraseña, debe restablecer la aplicación.</strong></p>
-											<br>
-											<p>En PROTEGEME, estamos comprometidos en crear redes de apoyo ante emergencias para tu comunidad.</p>
-											<br>
-											<br>
-											<p>Somos REDVOISS, comunicaciones como servicio</p>
-										</div>
-									</section>
-									EOF;
+                           <html>
+                              <head>
+                                 <title>Recuperar contraseña</title>
+                                 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+                                 <title>Notificación de Biometría</title>
+                              </head>
+                              <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.5; background-color: #f4f4f4; padding: 20px;">
+                                 <section id="section-recovery-user">
+
+                                    <div style="max-width: 600px; background: #fff; padding: 20px; padding-bottom: 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin: auto;">
+                              
+                                       <p style="font-size: 16px; margin-bottom: 10px;">Estimado/a $names,</p>
+                                       <p style="font-size: 16px; margin-bottom: 10px;">Has solicitado recuperar la contraseña de tu cuenta en <strong>PROTEGEME</strong> para el usuario <strong>$user</strong>.</p>
+                                       <p style="font-size: 16px; margin-bottom: 10px;">
+                                          Para restablecer tu contraseña, haz clic en el siguiente enlace:
+                                       </p>
+
+                                       <div style="background: #e6e5e5; padding: 15px; border-radius: 6px; margin-bottom: 20px; text-align: center;">
+                                          <p style="margin: 0;"><a href="$url">Restablecer contraseña</a></strong></p>
+                                       </div>
+
+                                       <p style="font-size: 16px; margin-bottom: 5px;">Recuerda que, al cambiar tu contraseña, deberás restablecer la aplicación.</p>
+   
+                                       <p>En <strong style="color: #dc3545;">PROTEGEME</strong>, estamos comprometidos en crear redes de apoyo ante emergencias para tu comunidad.</p>
+                                       
+                                       <p>Gracias por su preferencia. <br/>Somos <strong style="color: #f1a309;">REDVOISS</strong>, comunicaciones como servicio.</p>
+                                       
+                                       <p style="color: #777; font-size: 12px;">Este es un mensaje generado automáticamente, por favor no responda a este correo.</p>
+
+                                    </div>
+                                 </section>
+                              </div>
+                           </html>
+                           EOF;
 			return SEmail::Envia($subject, $mensaje, $cabeceras, $address, $names);
 		}
    }

@@ -16,6 +16,30 @@
       exit();
    }
 
+   function formatNum($numero) {
+
+      # Eliminar todos los caracteres no numericos
+      $numeroLimpio = preg_replace('/\D/', '', $numero);
+
+      # Si el numero ya incluye el prefijo internacional (56), lo dejamos tal cual
+      if (preg_match('/^56\d{6,9}$/', $numeroLimpio)) {
+         return $numeroLimpio;
+      }
+
+      # Validar largo permitido (ej: 6 a 9 digitos locales)
+      if (preg_match('/^\d{6,9}$/', $numeroLimpio)) {
+         $numeroConPrefijo = "56" . $numeroLimpio;
+         return $numeroConPrefijo;
+      }
+
+      return false; # Numero no valido: debe contener entre 6 y 9 digitos.
+
+   }
+
+   function sanitize($value) {
+      return htmlspecialchars(strip_tags($value ?? ''), ENT_QUOTES, 'UTF-8');
+   }  
+
    # Detectar si el request es JSON (segun encabezado)
    $contentType = $_SERVER["CONTENT_TYPE"] ?? '';
 
@@ -28,22 +52,23 @@
       $json = json_decode($rawData, true);
 
       # Asignar los parametros esperados
-      $busua_cod = htmlspecialchars(strip_tags($json['busua_cod'] ?? ''));
-      $name = htmlspecialchars(strip_tags($json['name'] ?? ''));
-      $num     = htmlspecialchars(strip_tags($json['num'] ?? ''));
-      $call = htmlspecialchars(strip_tags($json['call'] ?? ''));
-      $sms   = htmlspecialchars(strip_tags($json['sms'] ?? ''));
-      $listen   = htmlspecialchars(strip_tags($json['listen'] ?? ''));
+      $busua_cod = sanitize($json['busua_cod'] ?? '');
+      $name      = sanitize($json['name'] ?? '');
+      $num       = sanitize($json['num'] ?? '');
+      $call      = sanitize($json['call'] ?? '');
+      $sms       = sanitize($json['sms'] ?? '');
+      $listen    = sanitize($json['listen'] ?? '');
 
    } else {
 
-      # Fallback si llegara por POST tradicional
-      $busua_cod = htmlspecialchars(strip_tags($json['busua_cod'] ?? ''));
-      $name = htmlspecialchars(strip_tags($json['name'] ?? ''));
-      $num     = htmlspecialchars(strip_tags($json['num'] ?? ''));
-      $call = htmlspecialchars(strip_tags($json['call'] ?? ''));
-      $sms   = htmlspecialchars(strip_tags($json['sms'] ?? ''));
-      $listen   = htmlspecialchars(strip_tags($json['listen'] ?? ''));
+      // Fallback para peticiones tipo application/x-www-form-urlencoded
+      $busua_cod = sanitize($_POST['busua_cod'] ?? '');
+      $name      = sanitize($_POST['name'] ?? '');
+      $num       = sanitize($_POST['num'] ?? '');
+      $call      = sanitize($_POST['call'] ?? '');
+      $sms       = sanitize($_POST['sms'] ?? '');
+      $listen    = sanitize($_POST['listen'] ?? '');
+
    }
 
    # clases
@@ -78,6 +103,14 @@
    if (intval($Usuario->esta_cod) !== 1) {
       $DB->Logoff();
       sendError("El usuario se encuentra inactivo o suspendido. Contacte al administrador.", "INACTIVE_USER", 400);
+   }
+
+   # formatea numero 
+   $num = formatNum($num);
+
+   if (!$num) {
+      $DB->Logoff();
+      sendError("Número no cumple el formato adecuado.", "INACTIVE_NUM", 400);
    }
 
    # Verifica duplicacion del numero de contacto en llamadas

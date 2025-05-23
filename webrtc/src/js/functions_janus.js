@@ -198,9 +198,14 @@ async function loadJanus(response) {
                               $('#peer').focus();*/
 
                               $('#btn-emergency').attr('disabled', false);
-                              $('#btn-emergency').on("click", function () {
+
+                              if (window.location.href === 'https://pbe.redvoiss.net/webrtc/views/main.php') {
+                                 $('#btn-emergency').on("click", function () {
+                                    doCall(numcc, domainsip);
+                                 });
+                              } else {
                                  doCall(numcc, domainsip);
-                              });
+                              }
 
                            }
                         } else if (event === 'calling') {
@@ -220,6 +225,8 @@ async function loadJanus(response) {
                            //});
 
                            $('#state-register').html("Llamando ...");
+
+                           return false;
 
                         } else if (event === 'incomingcall') {
 
@@ -851,6 +858,7 @@ async function loadJanus(response) {
 function doCall(numcc, server) {
 
    const handle = sipcall;
+
    const uri = `sip:${numcc}@${server}`;
 
    const tracks = [{

@@ -460,6 +460,7 @@ h3 {
 }
 
 input[type="text"],
+input[type="number"],
 input[type="checkbox"] {
    font-size: 1rem;
    border-radius: 8px;
@@ -468,7 +469,8 @@ input[type="checkbox"] {
    transition: all 0.3s ease;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="number"]:focus {
    outline: none;
    border-color: #007bff;
    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
@@ -558,7 +560,6 @@ input[type="text"]:focus {
    font-size: 15px;
    font-weight: 500;
    margin-top: 20px;
-   margin-bottom: 20px;
    color: #2c2c2e;
    text-align: center;
 }
@@ -604,8 +605,7 @@ input[type="checkbox"] {
 
 .div-con-sombra {
    background-color: #f0f0f0; /* Color de fondo de la caja */
-   
-   box-shadow: 0 4px 8px rgb(123, 249, 88); /* Sombra verde con un pequeño desplazamiento */
+   box-shadow: 0 4px 8px rgb(123, 249, 88); /* Sombra verde */
 }
 
 .active-method {
@@ -631,15 +631,58 @@ input[type="checkbox"] {
    cursor: pointer;
    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
    transition: background-color 0.3s ease, transform 0.2s ease;
- }
- 
- .boton-rojo-suave:hover {
+}
+
+.boton-rojo-suave:hover {
    background-color: #f71f1f; /* Tonalidad ligeramente más intensa */
    transform: translateY(-2px);
- }
- 
- .boton-rojo-suave:active {
+}
+
+.boton-rojo-suave:active {
    background-color: #ff0000;
    transform: translateY(0);
- }
- 
+}
+
+.div-checks {
+   width: 15px;
+   height: 15px;
+}
+
+.check-green {
+   background-color: #7bf958;
+   border: 1px;
+   border-radius: 50px;
+   width: 10px;
+   height: 10px;
+   margin-bottom: 5px;
+}
+
+.check-secondary {
+   background-color: #ccc;
+   border: 1px;
+   border-radius: 50px;
+   width: 10px;
+   height: 10px;
+   margin-bottom: 5px;
+}
+
+#footerButtons {
+   top: 63%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+}
+#gap-footer {
+   display: flex;
+   justify-content: center;
+   gap: 50px;
+}
+
+.barra-indicador {
+   width: 50px;
+   height: 5px;
+}
+
+#contactBook {
+  height: 400px;
+  overflow-y: auto;
+}

@@ -3,6 +3,96 @@
 // url webrtc
 const url_webrtc = `${document.location.origin}/webrtc`;
 
+function waitPopover(op) {
+   const observer = new MutationObserver(() => {
+
+      const arrow = document.querySelector('.driver-popover-arrow');
+
+      if (arrow) {
+
+         if (op === 'start') {
+            arrow.classList.remove('driver-popover-arrow-align-end');
+            arrow.classList.add('driver-popover-arrow-align-start');
+         }
+
+         if (op === 'center') {
+            arrow.classList.remove('driver-popover-arrow-align-end');
+            arrow.classList.remove('driver-popover-arrow-none');
+            arrow.classList.add('driver-popover-arrow-align-center');
+         }
+
+         observer.disconnect();
+
+      }
+
+   });
+
+   observer.observe(document.body, {
+      childList: true,
+      subtree: true
+   });
+}
+
+
+function use1(op) {
+
+   const driver = window.driver.js.driver;
+   let driverObj;
+
+   if (parseInt(op) === 1) {
+
+      driverObj = driver({
+         popoverClass: 'driverjs-theme',
+         showProgress: true,
+         steps: [
+            {
+               element: '#btn-emergency', popover: { title: `Bot&oacute;n de emergencia`, description: `Inicia autom&aacute;ticamente una llamada al centro de atencii&oacute;n y notifica a los contactos.`, side: "bottom", align: 'center' },
+               onHighlightStarted: () => {
+                  waitPopover('center');
+               }
+            },
+            {
+               element: '#div1', popover: { description: `Centro de atenci&oacute;n y notificaci&oacute;n a contactos de emergencia.`, side: "top", align: "start" },
+               onHighlightStarted: () => {
+                  waitPopover('start');
+               }
+            },
+            {
+               element: "#div2", popover: { description: `Libreta de contactos`, side: "top", align: "center" },
+               onHighlightStarted: () => {
+                  waitPopover('center');
+               }
+            },
+            { element: "#div3", popover: { description: `Informaci&oacute;n de la aplicaci&oacute;n.`, side: "top", align: "end" } }
+         ],
+         progressText: `{{current}} de {{total}}`,
+         nextBtnText: ">>",
+         prevBtnText: "<<",
+         doneBtnText: "OK",
+      });
+
+   } else if (parseInt(op) === 2) {
+
+      driverObj = driver({
+         popoverClass: 'driverjs-theme',
+         showProgress: true,
+         steps: [
+            { element: '#cardUser', popover: { title: 'Mi Perfil', description: 'Ficha personal, con los datos b&aacute;sicos proporcionados por tu proveedor.', side: "bottom", align: 'center' } },
+            { element: '#contactBook', popover: { title: 'Libreta de contactos', description: 'Listado completo de contactos registrados en la plataforma.', side: "top", align: 'center' } },
+            { element: '#addContact', popover: { title: `Agregar un contacto`, description: `Al presionar el bot&oacute;n '+', podrás incorporar un nuevo contacto al sistema.` } },
+         ],
+         progressText: `{{current}} de {{total}}`,
+         nextBtnText: "siguiente",
+         prevBtnText: "anterior",
+         doneBtnText: "cerrar",
+      });
+
+   }
+
+   driverObj.drive();
+}
+
+
 // mensaje de tipo tost
 const Toast = Swal.mixin({
    toast: true,
@@ -16,6 +106,31 @@ const Toast = Swal.mixin({
       toast.addEventListener('mouseleave', Swal.resumeTimer)
    }
 });
+
+// error toast
+const showToastError = async (text, width = 'auto', timer = 5000) => {
+   await Toast.fire({
+      icon: 'error',
+      text,
+      width,
+      timer
+   });
+}
+
+// prepara pregunta toast
+const questionSweetAlert = async (text, width = 'auto') => {
+   return await Swal.fire({
+      html: text,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'Cancelar',
+      position: 'top',
+      width
+   });
+}
 
 // Solo permite numeros y teclas de edición/navegación
 function onlyNumbers(e) {
@@ -312,6 +427,11 @@ async function updateContactPreference(bot_cod, num, service) {
       const sms = document.getElementById('sms');
       const listen = document.getElementById('listen');
 
+      // checks
+      const callCheck = document.getElementById('checkCall');
+      const smsCheck = document.getElementById('checkSMS');
+      const listenCheck = document.getElementById('checkListen');
+
       let val = 0;
 
       switch (parseInt(service)) {
@@ -344,7 +464,7 @@ async function updateContactPreference(bot_cod, num, service) {
       if (!rta.ok) {
 
          const { message } = await rta.json();
-         alert(message);
+         showToastError(message);
          return;
 
       }
@@ -378,16 +498,31 @@ async function updateContactPreference(bot_cod, num, service) {
                call.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
                val === 1 ? call.classList.add('inactive-method') : call.classList.add('active-method', 'div-con-sombra');
                call.dataset.value = (val === 1 ? 2 : 1);
+               callCheck.classList.remove('check-green', 'check-secondary');
+               val === 1 ? callCheck.classList.add('check-secondary') : callCheck.classList.add('check-green');
+
+               if (val === 1) {
+                  listen.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
+                  val === 1 ? listen.classList.add('inactive-method') : listen.classList.add('active-method', 'div-con-sombra');
+                  listen.dataset.value = (val === 1 ? 0 : 1);
+                  listenCheck.classList.remove('check-green', 'check-secondary');
+                  val === 1 ? listenCheck.classList.add('check-secondary') : listenCheck.classList.add('check-green');
+               }
+
                break;
             case 2:
                sms.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
                val === 1 ? sms.classList.add('inactive-method') : sms.classList.add('active-method', 'div-con-sombra');
                sms.dataset.value = val === 1 ? 2 : 1;
+               smsCheck.classList.remove('check-green', 'check-secondary');
+               val === 1 ? smsCheck.classList.add('check-secondary') : smsCheck.classList.add('check-green');
                break;
             case 3:
                listen.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
                val === 1 ? listen.classList.add('inactive-method') : listen.classList.add('active-method', 'div-con-sombra');
                listen.dataset.value = (val === 1 ? 0 : 1);
+               listenCheck.classList.remove('check-green', 'check-secondary');
+               val === 1 ? listenCheck.classList.add('check-secondary') : listenCheck.classList.add('check-green');
                break;
          }
 
@@ -427,15 +562,29 @@ async function openContactDrawer(contact, bot_cod) {
    const sms = document.getElementById('sms');
    const listen = document.getElementById('listen');
 
+   // checks
+   const checkCall = document.getElementById('checkCall');
+   const checkSMS = document.getElementById('checkSMS');
+   const checkListen = document.getElementById('checkListen');
+
    // limpia clases de los botones
    call.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
    sms.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
    listen.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
 
+   // limpia los checks
+   checkCall.classList.remove('check-green', 'check-secondary');
+   checkSMS.classList.remove('check-green', 'check-secondary');
+   checkListen.classList.remove('check-green', 'check-secondary');
+
    // agrega clases definidas en los css
    parseInt(contact.state_call) === 1 ? call.classList.add('active-method', 'div-con-sombra') : call.classList.add('inactive-method');
    parseInt(contact.state_sms) === 1 ? sms.classList.add('active-method', 'div-con-sombra') : sms.classList.add('inactive-method');
    parseInt(contact.state_listen) === 1 ? listen.classList.add('active-method', 'div-con-sombra') : listen.classList.add('inactive-method');
+
+   parseInt(contact.state_call) === 1 ? checkCall.classList.add('check-green') : checkCall.classList.add('check-secondary');
+   parseInt(contact.state_sms) === 1 ? checkSMS.classList.add('check-green') : checkSMS.classList.add('check-secondary');
+   parseInt(contact.state_listen) === 1 ? checkListen.classList.add('check-green') : checkListen.classList.add('check-secondary');
 
    // asigna valor actual
    call.setAttribute('data-value', contact.state_call);
@@ -461,6 +610,11 @@ function updateContactPreferenceAdd(service) {
       const sms = document.getElementById('addSMS');
       const listen = document.getElementById('addListen');
 
+      // checks
+      const callCheck = document.getElementById('checkCallAdd');
+      const smsCheck = document.getElementById('checkSMSAdd');
+      const listenCheck = document.getElementById('checkListenAdd');
+
       let val = 0;
 
       switch (parseInt(service)) {
@@ -480,16 +634,29 @@ function updateContactPreferenceAdd(service) {
             call.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
             val === 1 ? call.classList.add('inactive-method') : call.classList.add('active-method', 'div-con-sombra');
             call.dataset.value = (val === 1 ? 2 : 1);
+            callCheck.classList.remove('check-green', 'check-secondary');
+            val === 1 ? callCheck.classList.add('check-secondary') : callCheck.classList.add('check-green');
+            if (val === 1) {
+               listen.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
+               val === 1 ? listen.classList.add('inactive-method') : listen.classList.add('active-method', 'div-con-sombra');
+               listen.dataset.value = (val === 1 ? 0 : 1);
+               listenCheck.classList.remove('check-green', 'check-secondary');
+               val === 1 ? listenCheck.classList.add('check-secondary') : listenCheck.classList.add('check-green');
+            }
             break;
          case 2:
             sms.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
             val === 1 ? sms.classList.add('inactive-method') : sms.classList.add('active-method', 'div-con-sombra');
             sms.dataset.value = val === 1 ? 2 : 1;
+            smsCheck.classList.remove('check-green', 'check-secondary');
+            val === 1 ? smsCheck.classList.add('check-secondary') : smsCheck.classList.add('check-green');
             break;
          case 3:
             listen.classList.remove('active-method', 'div-con-sombra', 'inactive-method');
             val === 1 ? listen.classList.add('inactive-method') : listen.classList.add('active-method', 'div-con-sombra');
             listen.dataset.value = (val === 1 ? 0 : 1);
+            listenCheck.classList.remove('check-green', 'check-secondary');
+            val === 1 ? listenCheck.classList.add('check-secondary') : listenCheck.classList.add('check-green');
             break;
       }
 
@@ -547,7 +714,9 @@ async function viewFormContact(bot_cod, num) {
 async function deleteContact() {
    try {
 
-      if (confirm("Esta acción eliminará el contacto de forma permanente. ¿Desea continuar?")) {
+      const question = await questionSweetAlert('Esta acción eliminará el contacto de forma permanente. ¿Desea continuar?');
+
+      if (question.isConfirmed) {
 
          const busua_cod = parseInt(document.getElementById('busua_cod').value);
          const bot_cod = parseInt(document.getElementById('bot_cod').value);
@@ -706,7 +875,6 @@ async function contactBook(contacts, bot_cod) {
                   </div>
                `;
                }).join(""); // Se muestra el numero (ID) de cada contacto en lugar del nombre
-
 
                // Inserta la letra de la seccion y los contactos generados en el contenedor
                section.innerHTML = `
@@ -919,16 +1087,13 @@ async function addContact(bot_cod, params) {
          body: JSON.stringify(params)
       });
 
-      const { message } = await rta.json();
-
-      // Procesamos la respuesta del servidor
       if (!rta.ok) {
-
-
-         alert(message);
+         const data = await rta.json();
+         showToastError(data.message);
          return;
-
       }
+
+      const { message } = await rta.json();
 
       // obtener informacion del usuario
       const data = await fetchDataUser(bot_cod);

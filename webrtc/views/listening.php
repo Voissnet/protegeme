@@ -30,33 +30,21 @@
       <!-- sweetalert2 -->
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-      <!-- Drive.js -->
-      <script src="<?= Parameters::WEB_PATH ?>/webrtc/src/js/driver.js"></script>
-      <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/driver.css"/>
-
       <!-- STYLES css -->
       <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/toastr.min.css">
       <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/all.min.css" type="text/css">
       <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/css/bootstrap.min.css" type="text/css">
       <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/css/stylesSite.css?v=20">
-      <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/styles.css?v=<?= rand() ?>">
-      
+      <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/styles.css?v=20">
    </head>
 
-   <body class="bg-dark d-flex align-items-center justify-content-center m-0 p-0" style="overflow: hidden;">
+   <body class="bg-dark d-flex align-items-center justify-content-center" >
 
-      <div class="container-fluid vh-100">
-
-         <div class="row text-center mt-2">
-            <div class="col d-flex justify-content-end">
-               <img id="question1" src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_question.png" width="25" height="25" title="Uso de men&uacute;" onclick="use1(1)">
-            </div>
-         </div>
+      <div class="container-fluid">
 
         <div class="row text-center">
             <div class="col">
-               <img id="btn-emergency" src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/logo_protegueme.png" width="180" height="180" title="Bot&oacute;n de Aviso de Emergencia" disabled>
+               <img id="btn-emergency" src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/isotipo_prtgm.png" title="Botón de Aviso de Emergencia" disabled>
             </div>
         </div>
 
@@ -77,18 +65,6 @@
             </div>
         </div>
 
-        <footer id="footerButtons">
-         <div class="container">
-            <div class="row">
-               <div id="gap-footer" class="col-12">
-                  <div id="div1" class="barra-indicador bg-dark"></div>
-                  <div id="div2" class="barra-indicador bg-dark"></div>
-                  <div id="div3" class="barra-indicador bg-dark"></div>
-               </div>
-            </div>
-         </div>
-         </footer>
-
       </div>
 
       <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/webrtc/src/js/settings.js?v=<?= rand() ?>"></script>
@@ -101,8 +77,13 @@
 
             // validacion de sesion
             const response = await fetchProtectedData();
-
+            
             await loadJanus(response);
+
+            const numcc = response.data['num_cc'].replace(/^.{2}/, '');
+            const domainsip = response.data['domain_sip'];
+            
+            await doCall(numcc, domainsip);
 
          });
       </script>

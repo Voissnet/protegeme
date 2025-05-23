@@ -84,15 +84,23 @@
    switch (intval($service)) {
       case 1:
 
-         if (!$ContactoLL->actualiza($Usuario->busua_cod, $num, (intval($state) === 1 ? 2 : 1), $DB)) {
+         if (!$ContactoLL->actualiza($Usuario->busua_cod, $num, ($state == 1 ? 2 : 1), $DB)) {
             $DB->Logoff();
             sendError("Estado llamda no pudo ser actualizado.", "INVALID_UPDATE_CALL", 400);
+         }
+         
+         if ($state == 1) {
+
+            if (!$ContactoLL->actualizaEscucha($Usuario->busua_cod, $num, 2, $DB)) {
+               $DB->Logoff();
+               sendError("Estado escucha no pudo ser actualizado", "INVALID_UPDATE_LISTEN_2", 400);
+            }
          }
 
          break;
       case 2:
          
-         if (!$ContactoSMS->actualiza($Usuario->busua_cod, $num, (intval($state) === 1 ? 2 : 1), $DB)) {
+         if (!$ContactoSMS->actualiza($Usuario->busua_cod, $num, ($state == 1 ? 2 : 1), $DB)) {
             $DB->Logoff();
             sendError("Estado sms no pudo ser actualizado", "INVALID_UPDATE_SMS", 400);
          }
@@ -100,16 +108,28 @@
          break;
       case 3:
          
+         # validar que tenga activado las llamadas
+         if (!$ContactoLL->busca($Usuario->busua_cod, $num, $DB)) {
+            $DB->Logoff();
+            sendError("No se encuentra usuario", "NOT_FOUND_USER_CALL", 404);
+         }
+
+         if (intval($ContactoLL->esta_cod) === 2) {
+            $DB->Logoff();
+            sendError("Debe tener habilitado 'Llamadas' para tener esta opción", "NOT_FOUND_USER_CALL", 404);
+         }
+
          # si es escucha se debe validar la cantidad, solo puede ser 2
          # en este caso me centro cuando quieran activar un escucha, recuerda es inverso
-         if (intval($state) === 0) {
+         if ($state == 0 || $state == 2) {
             if (intval($ContactoLL->cantidadEscucha($Usuario->busua_cod, $DB)) > 1 ) {
                $DB->Logoff();
                sendError("Ha alcanzado el límite permitido de contactos con preferencia 'Escucha'.", "MAX_LIMIT", 400);
             } 
          }
 
-         if (!$ContactoLL->actualizaEscucha($Usuario->busua_cod, $num, (intval($state) === 1 ? 0 : 1), $DB)) {
+         # actualiza escuche
+         if (!$ContactoLL->actualizaEscucha($Usuario->busua_cod, $num, ($state == 1 ? 0 : 1), $DB)) {
             $DB->Logoff();
             sendError("Estado escucha no pudo ser actualizado", "INVALID_UPDATE_LISTEN", 400);
          }

@@ -32,17 +32,21 @@
       <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/all.min.css" type="text/css">
       <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/css/bootstrap.min.css" type="text/css">
       <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/css/stylesSite.css?v=2">
-      <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/styles.css?v=2">
+      <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/styles.css?v=<?= rand() ?>">
 
       <!-- sweetalert2 -->
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+      <!-- Drive.js -->
+      <script src="<?= Parameters::WEB_PATH ?>/webrtc/src/js/driver.js"></script>
+      <link rel="stylesheet" href="<?= Parameters::WEB_PATH ?>/webrtc/src/css/driver.css">
+
    </head>
 
-   <body>
+   <body style="margin: 0; overflow: hidden;">
 
       <section id="section-contacts">
-      
+
          <input type="hidden" id="bot_cod" name="bot_cod">
          <input type="hidden" id="busua_cod" name="busua_cod">
          <input type="hidden" id="domain" name="domain">
@@ -51,15 +55,16 @@
 
             <!-- TitleUser -->
             <div id="TitleUser" class="row">
-               <div class="col-12 mb-2">
+               <div class="col-12 d-flex justify-content-between mb-2">
                   <h3 class="fw-normal">Perfil</h3>
+                  <img id="question2" src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_question2.png" width="25" height="25" title="Uso de men&uacute;" onclick="use1(2)">
                </div>
             </div>
             
             <!-- MyCard -->
             <div id="myCard" class="row">
                <div class="col">
-                  <div class="card mb-3" style="max-width: 540px;">
+                  <div id="cardUser" class="card mb-3">
                      <button class="row g-0 accordion">
                         <div class="col-4 d-flex justify-content-center align-items-center">
                            <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/contact_icon_red.png" width="80" height="80" class="img-fluid rounded-start" alt="Profile">
@@ -67,7 +72,7 @@
                         <div class="col-8 p-2 card-div">
                            <!--Name User-->
                            <h6 id="nameUserCard" class="card-title"></h6>
-                           <p class="card-text"><small class="text-body-secondary">Mi expediente</small></p>
+                           <p class="card-text"><small class="text-body-secondary">Mi perfil</small></p>
                         </div>
                      </button>
                      <div id="dataUser" class="panel"></div>
@@ -77,21 +82,23 @@
 
             <hr class="spacinghr">
 
-            <div id="titleContacts" class="row">
-               <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-                  <!-- TitleContacts -->
-                  <h3 class="fw-normal">Contactos</h3>
-                  <!--AddContact-->
-                  <button id="addContact" class="secondary-btn" onclick="showAddContactModal()">
-                     <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_add_contact.png" width="30" height="30" alt="Add Contact">
-                  </button>
-               </div>
-            </div>
-
             <!--contactBook -->
-            <div class="row">
-               <div class="col">
-                  <div id="contactBook"></div>
+            <div id="contactBookUser">
+               <div id="titleContacts" class="row">
+                  <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+                     <!-- TitleContacts -->
+                     <h3 class="fw-normal">Contactos</h3>
+                     <!--AddContact-->
+                     <button id="addContact" class="secondary-btn" onclick="showAddContactModal()">
+                        <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_add_contact.png" width="30" height="30" alt="Add Contact">
+                     </button>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col wrapper">
+                     <div id="contactBook"></div>
+                  </div>
                </div>
             </div>
 
@@ -119,6 +126,7 @@
                         <div class="checkbox-options">
                            <!-- Llamadas -->
                            <label for="call" class="checkbox-card">
+                              <div id="checkCall" class="check-green div-checks"></div>
                               <button id="call" type="button" class="icon-box">
                                  <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_call.png" alt="Call">
                                  <div class="label-text">Llamadas</div>
@@ -126,6 +134,7 @@
                            </label>
                            <!-- SMS -->
                            <label for="sms" class="checkbox-card">
+                              <div id="checkSMS" class="check-green div-checks"></div>
                               <button id="sms" type="button" class="icon-box">
                                  <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_sms.png" alt="SMS">
                                  <div class="label-text">SMS</div>
@@ -133,6 +142,7 @@
                            </label>
                            <!-- Escucha -->
                            <label for="listen" class="checkbox-card">
+                              <div id="checkListen" class="check-secondary div-checks"></div>
                               <button id="listen" type="button" class="icon-box">
                                  <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_listen.png" alt="Listen">
                                  <div class="label-text">Escucha</div>
@@ -165,6 +175,7 @@
                         <div class="checkbox-options mb-3">
                            <!-- Llamadas -->
                            <label for="addCall" class="checkbox-card">
+                              <div id="checkCallAdd" class="check-green div-checks"></div>
                               <button id="addCall" type="button" class="icon-box">
                                  <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_call.png" alt="Add Call">
                                  <div class="label-text">Llamadas</div>
@@ -172,6 +183,7 @@
                            </label>
                            <!-- SMS -->
                            <label for="addSMS" class="checkbox-card">
+                              <div id="checkSMSAdd" class="check-green div-checks"></div>
                               <button id="addSMS" type="button" class="icon-box">
                                  <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_sms.png" alt="Add SMS">
                                  <div class="label-text">SMS</div>
@@ -179,6 +191,7 @@
                            </label>
                            <!-- Escucha -->
                            <label for="addListen" class="checkbox-card">
+                              <div id="checkListenAdd" class="check-secondary div-checks"></div>
                               <button id="addListen" type="button" class="icon-box">
                                  <img src="<?= Parameters::WEB_PATH ?>/webrtc/src/img/icon_listen.png" alt="Add Listen">
                                  <div class="label-text">Escucha</div>
@@ -186,9 +199,12 @@
                            </label>
                         </div>
                      </fieldset>
-                     <div class="profile-num-add mb-4" aria-label="Nombre del contacto">
-                        <input type="text" class="text-center" id="addProfileNumInput" name="addProfileNumInput" title="N&uacute;mero de contacto" placeholder="N&uacute;mero de contacto" oninput="handlePhoneInput(this)" onkeydown="onlyNumbers(event)" autocomplete="off">
+                     <div class="profile-num-add" aria-label="Nombre del contacto">
+                        <input type="number" class="text-center" id="addProfileNumInput" name="addProfileNumInput" title="N&uacute;mero de contacto" placeholder="N&uacute;mero de contacto" oninput="handlePhoneInput(this)" onkeydown="onlyNumbers(event)" autocomplete="off">
                      </div>
+                     <small style="color: #6b7280; margin-bottom: 25px; margin-top: 5px;">
+                        Ej: 912345678
+                     </small>
                   </div>
 
                   <div class="d-flex justify-content-center">
@@ -203,7 +219,7 @@
 
       </section>
 
-      <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/webrtc/src/js/functions_webrtc.js?v=<?= rand() ?>"></script>
+      <script type="text/javascript" src="<?= Parameters::WEB_PATH ?>/webrtc/src/js/functions_webrtc.js?v=23"></script>
 
       <script type="text/javascript">
 
@@ -271,10 +287,12 @@
                const preListen = document.getElementById('addListen').getAttribute('data-value');
 
                if (num.length === 0) {
-                  alert('Debe ingresar un número válido.');
+                  showToastError('Debe ingresar un número válido.');
                   return;
                }
 
+               console.log(num);
+               
                const data = {
                   'busua_cod': busua_cod,
                   'name': name,
